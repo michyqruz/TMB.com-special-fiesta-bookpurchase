@@ -11,6 +11,11 @@ body {
 a {
   color: #ff6f61;
   text-decoration: none;
+  text-align: center;
+}
+
+a h2{
+  background-color: blanchedalmond;
 }
 
 a:hover {
@@ -21,19 +26,26 @@ a:hover {
 .header {
   text-align: center;
   padding: 2rem;
-  background-color: #1e1e1e;
+  background-image: url('moneybox.jpeg'); 
+  background-position: bottom; 
+  background-size: cover; 
+  filter: blur(3px); 
   border-bottom: 2px solid #ff6f61;
+  border-top: 10px solid black;
 }
 
 .header h1 {
   font-size: 3rem;
   color: #ff6f61;
   margin: 0;
+  filter: drop-shadow(2px 4px 6px black);
 }
 
 .header p {
   font-size: 1.2rem;
   margin: 0.5rem 0;
+  color: #ff6f61;
+  opacity: 0;
 }
 
 /* Content */
@@ -60,6 +72,13 @@ ul {
   list-style-type: disc;
   padding-left: 1.5rem;
 }
+
+.moneybox{
+width: 400px;
+height: auto;
+max-width: 100%;
+}
+
 
 /* Featured Books */
 .book-grid {
