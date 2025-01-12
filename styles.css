@@ -39,6 +39,7 @@ a:hover {
   color: #ff6f61;
   margin: 0;
   filter: drop-shadow(2px 4px 6px black);
+  opacity: 0;
 }
 
 .header p {
