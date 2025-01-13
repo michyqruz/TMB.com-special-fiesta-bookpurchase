@@ -4,10 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
   <link href="moneybox.jpeg" rel="icon" type="images/png">
-  <title>The Money Box - A Book Sale Event</title>
+  <title>The Money Box - Secret to financial freedom</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Top Page Advertisement -->
+  <div id="top-ad" class="top-ad hidden">
+    <div class="ad-content">
+      <p>🎉 Exness Broker: $10 deposit and best leverage. <strong><a href="">Try Exness</a></strong>. 🎉</p>
+      <button id="close-ad" class="close-ad">✖</button>
+    </div>
+  </div>
+
   <!-- Header Section -->
   <header class="header">
     <h1>The Money Box</h1>
@@ -88,8 +96,8 @@
       <p>If you have any questions about the event or need assistance, please reach out to us:</p>
       <ul>
         <li>Email: <a href="mailto:info@moneyboxbooksale.com">info@moneyboxbooksale.com</a></li>
-        <li>Phone: +1-800-BOOKSALE</li>
-        <li>Follow us on social media for updates!</li>
+        <li>Phone: +1-812-232-7964</li>
+        <li>Contact us for any for updates!</li>
       </ul>
     </section>
   </main>
@@ -99,4 +107,23 @@
     <p>&copy; 2025 The Money Box. All rights reserved.</p>
   </footer>
 </body>
+  <script>
+	var topAd = document.getElementById("top-ad");
+	var closeAdButton = document.getElementById("close-ad");
+
+	function showAd() {
+	  topAd.classList.remove("hidden");
+	  topAd.classList.add("visible");
+	}
+
+	function hideAd() {
+	  topAd.classList.remove("visible");
+	  topAd.classList.add("hidden");
+	}
+
+	setTimeout(showAd, 1000);
+
+	closeAdButton.addEventListener("click", hideAd);
+  </script>
 </html>
+
