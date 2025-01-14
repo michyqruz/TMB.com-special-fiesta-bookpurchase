@@ -11,34 +11,34 @@ body {
 /* Top Ad Styles */
 .top-ad {
   position: fixed;
+  top: 0;
   left: 0;
   width: 100%;
-  top: -100px; /* Start hidden above the viewport */
   background-color: #ff6f61;
   color: #fff;
-  text-align: center;
   padding: 10px 20px;
   z-index: 1000;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: top 0.5s ease-in-out; /* Smooth slide-in and slide-out effect */
+  overflow: hidden; /* Ensures content does not overflow during animation */
 }
 
 .ad-content {
   display: flex;
   justify-content: space-between;
-  width: 100%;
   align-items: center;
+  top: -100px; /* Start hidden above the viewport */
+  left: 0px;
+  position: relative;
 }
 
 .ad-content p {
   margin: 0;
   font-size: 1rem;
 }
-.ad-content a{
- color: white;
+
+.ad-content a {
+  color: white;
+  font-size: 1rem;
 }
 
 .close-ad {
@@ -48,18 +48,18 @@ body {
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0 30px;
-  margin-left: 20px;
 }
 
 .close-ad:hover {
   color: #ddd;
 }
+
 /* Hidden Class for Animation */
-.hidden {
+.hidden-content {
   top: -100px; /* Position above the viewport */
 }
 
-.visible {
+.visible-content  {
   top: 0; /* Position at the top of the viewport */
 }
 
@@ -94,6 +94,7 @@ a:hover {
   filter: blur(3px); 
   border-bottom: 2px solid #ff6f61;
   border-top: 10px solid black;
+  max-height: 80px;
 }
 
 .header h1 {
@@ -113,7 +114,7 @@ a:hover {
 
 /* Content */
 .content {
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 section {
@@ -133,7 +134,7 @@ p, ul, li {
 
 ul {
   list-style-type: disc;
-  padding-left: 1.5rem;
+  padding-left: 1rem;
 }
 
 .moneybox{
