@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Top Page Advertisement -->
-  <div id="top-ad" class="top-ad hidden">
-    <div class="ad-content">
-      <p>🎉 Exness Broker: $10 deposit and best leverage. <strong><a href="https://one.exnesstrack.org/a/bzowjwynv9?source=app&platform=mobile&pid=mobile_share">Try Exness</a></strong>. 🎉</p>
+<!-- Top Page Advertisement -->
+  <div id="top-ad" class="top-ad">
+    <div id="ad-content" class="ad-content hidden-content">
+      <p>🎉 Exness Broker: $10 deposit and best leverage. <strong><a href="">Try Exness</a></strong>. 🎉</p>
       <button id="close-ad" class="close-ad">✖</button>
     </div>
   </div>
@@ -108,22 +108,26 @@
   </footer>
 </body>
   <script>
-	var topAd = document.getElementById("top-ad");
-	var closeAdButton = document.getElementById("close-ad");
+// Select the advertisement content and close button
+const adContent = document.getElementById("ad-content");
+const closeAdButton = document.getElementById("close-ad");
 
-	function showAd() {
-	  topAd.classList.remove("hidden");
-	  topAd.classList.add("visible");
-	}
+// Function to slide in the ad content
+function slideInAd() {
+  adContent.classList.remove("hidden-content");
+  adContent.classList.add("visible-content");
+}
 
-	function hideAd() {
-	  topAd.classList.remove("visible");
-	  topAd.classList.add("hidden");
-	}
+// Function to slide out the ad content when closed
+function slideOutAd() {
+  adContent.classList.remove("visible-content");
+  adContent.classList.add("hidden-content");
+}
 
-	setTimeout(showAd, 1000);
+// Trigger the ad content slide-in after 1 second
+setTimeout(slideInAd, 1000);
 
-	closeAdButton.addEventListener("click", hideAd);
+// Add event listener to close the ad when the button is clicked
+closeAdButton.addEventListener("click", slideOutAd);
   </script>
 </html>
-
