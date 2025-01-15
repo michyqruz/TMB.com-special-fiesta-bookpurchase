@@ -14,8 +14,8 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #222; /* #ff6f61; */
-  /* color: #fff; */
+  background-color: #ff6f61;
+  color: #fff;
   padding: 10px 20px;
   z-index: 1000;
   border-bottom: 2px solid #ff6f61;
@@ -45,7 +45,7 @@ body {
 .close-ad {
   background: transparent;
   border: none;
-  color: white; /* #fff; */
+  color: #fff;
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0 30px;
