@@ -1,7 +1,7 @@
 {
   "name": "Gwallet",
   "short_name": "Gwallet",
-  "start_url": "/",
+  "start_url": "",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
