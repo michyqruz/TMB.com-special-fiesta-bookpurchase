@@ -1,7 +1,9 @@
 {
   "name": "Gwallet",
   "short_name": "Gwallet",
+  "description": "Secure Transactions",
   "start_url": "",
+  "scope": "."
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
