@@ -63,16 +63,18 @@
             margin: 20px 0;
             padding: 0;
         }
+        .ios-stepd ol{
+            counter-reset: step;
+        }
         .ios-steps li {
             margin-bottom: 15px;
             position: relative;
             padding-left: 30px;
-            counter-reset: step;
             list-style: none;
+            counter-increment: step;
         }
         .ios-steps li:before {
             content: counter(step);
-            counter-increment: step;
             position: absolute;
             left: 0;
             top: 0;
