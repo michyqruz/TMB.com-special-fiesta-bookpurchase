@@ -63,8 +63,13 @@
             margin: 20px 0;
             padding: 0;
         }
+        .ios-steps li {
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 30px;
+        }
         .ios-steps li:before {
-            content: counter(step);
+            content: counter(step) “. “;
             counter-increment: step;
             position: absolute;
             left: 0;
