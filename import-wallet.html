@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Wallet | CryptoSecure</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e44ce;
+            --secondary-color: #6c63ff;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+        }
+        body {
+            background-color: var(--light-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .import-method {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .import-method:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 68, 206, 0.05);
+        }
+        .import-method.active {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 68, 206, 0.1);
+        }
+        .method-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-wallet me-2"></i>CryptoSecure
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="create-wallet.html">Create Wallet</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="import-wallet.html">Import Wallet</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5 flex-grow-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="text-center mb-4">Import Existing Wallet</h2>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i> Importing a wallet will replace any existing wallet on this device. Make sure you have a backup of your current wallet before proceeding.
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">Select Import Method</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="import-method" onclick="selectMethod('mnemonic')" id="mnemonicMethod">
+                                        <div class="method-icon">
+                                            <i class="fas fa-key"></i>
+                                        </div>
+                                        <h5>Recovery Phrase</h5>
+                                        <p class="text-muted">12, 18 or 24 word mnemonic phrase</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="import-method" onclick="selectMethod('privateKey')" id="privateKeyMethod">
+                                        <div class="method-icon">
+                                            <i class="fas fa-lock"></i>
+                                        </div>
+                                        <h5>Private Key</h5>
+                                        <p class="text-muted">Hexadecimal private key</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="import-method" onclick="selectMethod('keystore')" id="keystoreMethod">
+                                        <div class="method-icon">
+                                            <i class="fas fa-file-import"></i>
+                                        </div>
+                                        <h5>Keystore File</h5>
+                                        <p class="text-muted">JSON file encrypted with password</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="import-method" onclick="selectMethod('hardware')" id="hardwareMethod">
+                                        <div class="method-icon">
+                                            <i class="fas fa-usb"></i>
+                                        </div>
+                                        <h5>Hardware Wallet</h5>
+                                        <p class="text-muted">Connect Ledger or Trezor</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="importWalletForm" style="display: none;">
+                            <div id="mnemonicFields">
+                                <div class="mb-3">
+                                    <label for="mnemonicPhrase" class="form-label">Recovery Phrase</label>
+                                    <textarea class="form-control" id="mnemonicPhrase" rows="3" placeholder="Enter your 12, 18 or 24 word recovery phrase"></textarea>
+                                    <div class="form-text">Separate each word with a single space</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="mnemonicPassword" class="form-label">Passphrase (Optional)</label>
+                                    <input type="password" class="form-control" id="mnemonicPassword" placeholder="Only if you set a passphrase when creating the wallet">
+                                </div>
+                            </div>
+
+                            <div id="privateKeyFields" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="privateKey" class="form-label">Private Key</label>
+                                    <input type="text" class="form-control" id="privateKey" placeholder="Enter your private key">
+                                </div>
+                            </div>
+
+                            <div id="keystoreFields" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="keystoreFile" class="form-label">Keystore File</label>
+                                    <input type="file" class="form-control" id="keystoreFile">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="keystorePassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="keystorePassword" placeholder="Enter the password for your keystore file">
+                                </div>
+                            </div>
+
+                            <div id="hardwareFields" style="display: none;">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i> Connect your hardware wallet via USB and unlock it. Make sure you have the Ethereum app open if using Ledger.
+                                </div>
+                                <div class="d-flex justify-content-center mb-3">
+                                    <button type="button" class="btn btn-outline-primary me-2">
+                                        <i class="fas fa-usb me-2"></i>Connect Ledger
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary">
+                                        <i class="fas fa-usb me-2"></i>Connect Trezor
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="walletName" class="form-label">Wallet Name (Optional)</label>
+                                <input type="text" class="form-control" id="walletName" placeholder="My Imported Wallet">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Set a Password for This Device</label>
+                                <input type="password" class="form-control" id="password" required>
+                                <div class="form-text">This password encrypts your wallet locally</div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Import Wallet</button>
+                                <a href="index.html" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container text-center">
+            <small>&copy; 2023 CryptoSecure Wallet. All rights reserved.</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedMethod = null;
+        
+        function selectMethod(method) {
+            selectedMethod = method;
+            
+            // Reset all method selections
+            document.querySelectorAll('.import-method').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Activate selected method
+            document.getElementById(method + 'Method').classList.add('active');
+            
+            // Show the form
+            document.getElementById('importWalletForm').style.display = 'block';
+            
+            // Hide all field groups
+            document.getElementById('mnemonicFields').style.display = 'none';
+            document.getElementById('privateKeyFields').style.display = 'none';
+            document.getElementById('keystoreFields').style.display = 'none';
+            document.getElementById('hardwareFields').style.display = 'none';
+            
+            // Show the selected field group
+            if (method === 'hardware') {
+                document.getElementById('hardwareFields').style.display = 'block';
+            } else {
+                document.getElementById(method + 'Fields').style.display = 'block';
+            }
+        }
+        
+        document.getElementById('importWalletForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!selectedMethod) {
+                alert('Please select an import method');
+                return;
+            }
+            
+            // In a real app, you would validate and import the wallet here
+            // For this demo, we'll redirect to the dashboard
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html>
