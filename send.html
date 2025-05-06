@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Crypto | CryptoSecure</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e44ce;
+            --secondary-color: #6c63ff;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --sidebar-width: 250px;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .nav-link {
+            color: #495057;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(78, 68, 206, 0.1);
+            color: var(--primary-color);
+        }
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .asset-selector {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .asset-selector:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 68, 206, 0.05);
+        }
+        .asset-selector.active {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 68, 206, 0.1);
+        }
+        .asset-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(78, 68, 206, 0.1);
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(78, 68, 206, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="p-4">
+            <h4 class="text-center mb-4">
+                <i class="fas fa-wallet me-2"></i>CryptoSecure
+            </h4>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard.html">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="send.html">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="receive.html">
+                        <i class="fas fa-qrcode"></i> Receive
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="transactions.html">
+                        <i class="fas fa-exchange-alt"></i> Transactions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-line"></i> Market
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-exchange-alt"></i> Swap
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <a class="nav-link" href="settings.html">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="security.html">
+                        <i class="fas fa-shield-alt"></i> Security
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg mb-4">
+            <div class="container-fluid">
+                <button class="btn d-lg-none" type="button" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
+                            <div class="user-avatar me-2">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span>My Wallet</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="settings.html">Settings</a></li>
+                            <li><a class="dropdown-item" href="security.html">Security</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="index.html">Lock Wallet</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="text-center mb-4">Send Cryptocurrency</h2>
+                        
+                        <!-- Asset Selection -->
+                        <div class="mb-4">
+                            <label class="form-label">Select Asset</label>
+                            <div class="row g-3">
+                                <div class="col-6 col-md-4">
+                                    <div class="asset-selector active" onclick="selectAsset('eth')">
+                                        <div class="asset-icon mx-auto mb-2">
+                                            <i class="fab fa-ethereum"></i>
+                                        </div>
+                                        <div class="text-center">Ethereum</div>
+                                        <small class="text-center d-block text-muted">0.8754 ETH</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="asset-selector" onclick="selectAsset('btc')">
+                                        <div class="asset-icon mx-auto mb-2">
+                                            <i class="fab fa-bitcoin"></i>
+                                        </div>
+                                        <div class="text-center">Bitcoin</div>
+                                        <small class="text-center d-block text-muted">0.0125 BTC</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="asset-selector" onclick="selectAsset('usdc')">
+                                        <div class="asset-icon mx-auto mb-2">
+                                            <i class="fas fa-dollar-sign"></i>
+                                        </div>
+                                        <div class="text-center">USDC</div>
+                                        <small class="text-center d-block text-muted">500.00 USDC</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recipient Address -->
+                        <div class="mb-4">
+                            <label for="recipientAddress" class="form-label">Recipient Address</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="recipientAddress" placeholder="Enter wallet address or ENS name">
+                                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#contactsModal">
+                                    <i class="fas fa-address-book"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="mb-4">
+                            <label for="amount" class="form-label">Amount</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="amount" placeholder="0.00">
+                                <span class="input-group-text">ETH</span>
+                                <button class="btn btn-outline-secondary" type="button">Max</button>
+                            </div>
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-muted">Balance: 0.8754 ETH</small>
+                                <small class="text-muted">≈ $4,382.75</small>
+                            </div>
+                        </div>
+
+                        <!-- Network Fee -->
+                        <div class="mb-4">
+                            <label class="form-label">Network Fee</label>
+                            <div class="card bg-light p-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="feeOption" id="feeLow" checked>
+                                    <label class="form-check-label" for="feeLow">
+                                        Low (15-30 min)
+                                    </label>
+                                    <div class="float-end">0.0012 ETH ($6.00)</div>
+                                </div>
+                            </div>
+                            <div class="card bg-light p-3 mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="feeOption" id="feeMedium">
+                                    <label class="form-check-label" for="feeMedium">
+                                        Medium (5-15 min)
+                                    </label>
+                                    <div class="float-end">0.0018 ETH ($9.00)</div>
+                                </div>
+                            </div>
+                            <div class="card bg-light p-3 mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="feeOption" id="feeHigh">
+                                    <label class="form-check-label" for="feeHigh">
+                                        High (<5 min)
+                                    </label>
+                                    <div class="float-end">0.0025 ETH ($12.50)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Memo (Optional) -->
+                        <div class="mb-4">
+                            <label for="memo" class="form-label">Memo (Optional)</label>
+                            <input type="text" class="form-control" id="memo" placeholder="Add a note for this transaction">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#confirmModal">Review Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contacts Modal -->
+    <div class="modal fade" id="contactsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Saved Addresses</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action" onclick="selectContact('0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7', 'Alice')">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Alice</h6>
+                                <small>2 days ago</small>
+                            </div>
+                            <small class="text-muted">0x892...c43e7</small>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="selectContact('0x7fC3F2a3a4bB5c6D7e8f9A0B1C2D3E4F5A6B7C8', 'Bob')">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Bob</h6>
+                                <small>1 week ago</small>
+                            </div>
+                            <small class="text-muted">0x7fC...6B7C8</small>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="selectContact('0x3A4b5C6d7E8f9A0B1c2D3e4F5a6B7c8D9E0f1A2', 'Exchange')">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Exchange</h6>
+                                <small>2 weeks ago</small>
+                            </div>
+                            <small class="text-muted">0x3A4...f1A2</small>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">Add New</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Contact Modal -->
+    <div class="modal fade" id="addContactModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Contact</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="contactName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="contactName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactAddress" class="form-label">Wallet Address</label>
+                        <input type="text" class="form-control" id="contactAddress">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Save Contact</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Transaction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <div class="display-6">0.5 ETH</div>
+                        <div class="text-muted">≈ $2,503.71</div>
+                    </div>
+                    <div class="card bg-light p-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>To:</span>
+                            <span class="text-end">0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7</span>
+                        </div>
+                    </div>
+                    <div class="card bg-light p-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Network Fee:</span>
+                            <span>0.0012 ETH ($6.00)</span>
+                        </div>
+                    </div>
+                    <div class="card bg-light p-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Total:</span>
+                            <span class="fw-bold">0.5012 ETH ($2,509.71)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="sendTransaction()">Confirm & Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        }
+        
+        function selectAsset(asset) {
+            document.querySelectorAll('.asset-selector').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // In a real app, you would update the form based on selected asset
+        }
+        
+        function selectContact(address, name) {
+            document.getElementById('recipientAddress').value = address;
+            const contactsModal = bootstrap.Modal.getInstance(document.getElementById('contactsModal'));
+            contactsModal.hide();
+        }
+        
+        function sendTransaction() {
+            // In a real app, you would send the transaction here
+            alert('Transaction would be sent here in a real application');
+            const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+            confirmModal.hide();
+            // Redirect to transactions page
+            window.location.href = 'transactions.html';
+        }
+    </script>
+</body>
+</html>
