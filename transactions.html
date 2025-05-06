@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History | CryptoSecure</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e44ce;
+            --secondary-color: #6c63ff;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --sidebar-width: 250px;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .nav-link {
+            color: #495057;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(78, 68, 206, 0.1);
+            color: var(--primary-color);
+        }
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .transaction-in {
+            color: #28a745;
+        }
+        .transaction-out {
+            color: #dc3545;
+        }
+        .transaction-swap {
+            color: #17a2b8;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(78, 68, 206, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="p-4">
+            <h4 class="text-center mb-4">
+                <i class="fas fa-wallet me-2"></i>CryptoSecure
+            </h4>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard.html">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="send.html">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="receive.html">
+                        <i class="fas fa-qrcode"></i> Receive
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="transactions.html">
+                        <i class="fas fa-exchange-alt"></i> Transactions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-line"></i> Market
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-exchange-alt"></i> Swap
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <a class="nav-link" href="settings.html">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="security.html">
+                        <i class="fas fa-shield-alt"></i> Security
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg mb-4">
+            <div class="container-fluid">
+                <button class="btn d-lg-none" type="button" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
+                            <div class="user-avatar me-2">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span>My Wallet</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="settings.html">Settings</a></li>
+                            <li><a class="dropdown-item" href="security.html">Security</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="index.html">Lock Wallet</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">Transaction History</h5>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-secondary">All</button>
+                                <button class="btn btn-sm btn-outline-secondary">In</button>
+                                <button class="btn btn-sm btn-outline-secondary">Out</button>
+                            </div>
+                        </div>
+                        <div class="input-group mb-4">
+                            <input type="text" class="form-control" placeholder="Search transactions...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#transactionModal" data-txid="tx123">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-arrow-down transaction-in"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Received ETH</h6>
+                                            <small class="text-muted">From: 0x8a...3f2c</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1 transaction-in">+0.25 ETH</h6>
+                                        <small class="text-muted">2 hours ago</small>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#transactionModal" data-txid="tx456">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-arrow-up transaction-out"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Sent USDC</h6>
+                                            <small class="text-muted">To: 0x5b...9e1d</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1 transaction-out">-100.00 USDC</h6>
+                                        <small class="text-muted">1 day ago</small>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#transactionModal" data-txid="tx789">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-exchange-alt transaction-swap"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Swapped ETH to BTC</h6>
+                                            <small class="text-muted">Exchange</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1">0.1 ETH → 0.0025 BTC</h6>
+                                        <small class="text-muted">3 days ago</small>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#transactionModal" data-txid="tx101">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-arrow-down transaction-in"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Received BTC</h6>
+                                            <small class="text-muted">From: 0x3f...7a2b</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1 transaction-in">+0.005 BTC</h6>
+                                        <small class="text-muted">1 week ago</small>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#transactionModal" data-txid="tx112">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-arrow-up transaction-out"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Sent ETH</h6>
+                                            <small class="text-muted">To: 0x9e...4c3d</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-1 transaction-out">-0.5 ETH</h6>
+                                        <small class="text-muted">2 weeks ago</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <nav class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Details Modal -->
+    <div class="modal fade" id="transactionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transactionModalTitle">Transaction Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <div class="display-6 transaction-in" id="txAmount">+0.25 ETH</div>
+                        <div class="text-muted" id="txFiatAmount">≈ $1,251.86</div>
+                    </div>
+                    <div class="card bg-light p-3 mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Status:</span>
+                            <span class="badge bg-success" id="txStatus">Completed</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Date:</span>
+                            <span id="txDate">May 15, 2023 14:32</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>From:</span>
+                            <span class="text-end" id="txFrom">0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>To:</span>
+                            <span class="text-end" id="txTo">0x7fC3F2a3a4bB5c6D7e8f9A0B1C2D3E4F5A6B7C8</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Network Fee:</span>
+                            <span id="txFee">0.0012 ETH ($6.00)</span>
+                        </div>
+                    </div>
+                    <div class="card bg-light p-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Transaction ID:</span>
+                            <span class="text-end" id="txId">0x4a3b2c1d...e8f9a0b1</span>
+                        </div>
+                    </div>
+                    <div class="card bg-light p-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Memo:</span>
+                            <span class="text-end" id="txMemo">Payment for services</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="viewOnExplorer()">
+                        <i class="fas fa-external-link-alt me-2"></i>View on Explorer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        }
+        
+        // Transaction data for the modal
+        const transactions = {
+            tx123: {
+                type: 'in',
+                amount: '+0.25 ETH',
+                fiatAmount: '≈ $1,251.86',
+                status: 'Completed',
+                date: 'May 15, 2023 14:32',
+                from: '0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7',
+                to: '0x7fC3F2a3a4bB5c6D7e8f9A0B1C2D3E4F5A6B7C8',
+                fee: '0.0012 ETH ($6.00)',
+                id: '0x4a3b2c1d...e8f9a0b1',
+                memo: 'Payment for services'
+            },
+            tx456: {
+                type: 'out',
+                amount: '-100.00 USDC',
+                fiatAmount: '≈ $100.00',
+                status: 'Completed',
+                date: 'May 14, 2023 09:15',
+                from: '0x7fC3F2a3a4bB5c6D7e8f9A0B1C2D3E4F5A6B7C8',
+                to: '0x5b9e1d3f7a2b8c4d6e0f1a2b3c4d5e6f7a8b9c0',
+                fee: '0.0005 ETH ($2.50)',
+                id: '0x5e6f7a8b...9c0d1e2f',
+                memo: 'Monthly subscription'
+            },
+            tx789: {
+                type: 'swap',
+                amount: '0.1 ETH → 0.0025 BTC',
+                fiatAmount: '≈ $500.00 → $512.50',
+                status: 'Completed',
+                date: 'May 12, 2023 16:45',
+                from: '0x7fC3F2a3a4bB5c6D7e8f9A0B1C2D3E4F5A6B7C8',
+                to: 'Exchange',
+                fee: '0.0015 ETH ($7.50)',
+                id: '0x3a4b5c6d...7e8f9a0b',
+                memo: 'Converted to BTC'
+            }
+        };
+        
+        // Set up modal event listener
+        document.getElementById('transactionModal').addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const txId = button.getAttribute('data-txid');
+            const tx = transactions[txId];
+            
+            document.getElementById('transactionModalTitle').textContent = button.querySelector('h6').textContent;
+            document.getElementById('txAmount').textContent = tx.amount;
+            document.getElementById('txFiatAmount').textContent = tx.fiatAmount;
+            document.getElementById('txStatus').textContent = tx.status;
+            document.getElementById('txDate').textContent = tx.date;
+            document.getElementById('txFrom').textContent = tx.from;
+            document.getElementById('txTo').textContent = tx.to;
+            document.getElementById('txFee').textContent = tx.fee;
+            document.getElementById('txId').textContent = tx.id;
+            document.getElementById('txMemo').textContent = tx.memo;
+            
+            // Set color based on transaction type
+            const amountElement = document.getElementById('txAmount');
+            amountElement.classList.remove('transaction-in', 'transaction-out', 'transaction-swap');
+            if (tx.type === 'in') {
+                amountElement.classList.add('transaction-in');
+            } else if (tx.type === 'out') {
+                amountElement.classList.add('transaction-out');
+            } else {
+                amountElement.classList.add('transaction-swap');
+            }
+        });
+        
+        function viewOnExplorer() {
+            // In a real app, this would open the transaction in a block explorer
+            window.open('https://etherscan.io/tx/' + document.getElementById('txId').textContent, '_blank');
+        }
+    </script>
+</body>
+</html>
