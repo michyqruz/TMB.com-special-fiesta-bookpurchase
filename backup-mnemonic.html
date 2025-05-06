@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup Recovery Phrase | CryptoSecure</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e44ce;
+            --secondary-color: #6c63ff;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+        }
+        body {
+            background-color: var(--light-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .mnemonic-container {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .mnemonic-word {
+            display: inline-block;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            margin: 0.3rem;
+            font-weight: bold;
+        }
+        .mnemonic-word .number {
+            color: #6c757d;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        .step {
+            text-align: center;
+            position: relative;
+            flex: 1;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            color: #6c757d;
+        }
+        .step.active .step-number {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .step.completed .step-number {
+            background-color: #28a745;
+            color: white;
+        }
+        .step-title {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .step.active .step-title {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        .step.completed .step-title {
+            color: #28a745;
+        }
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 60%;
+            width: 80%;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: -1;
+        }
+        .step.completed:not(:last-child)::after {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-wallet me-2"></i>CryptoSecure
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5 flex-grow-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="text-center mb-4">Backup Your Recovery Phrase</h2>
+                        
+                        <!-- Step Indicator -->
+                        <div class="step-indicator">
+                            <div class="step completed">
+                                <div class="step-number">1</div>
+                                <div class="step-title">Create</div>
+                            </div>
+                            <div class="step active">
+                                <div class="step-number">2</div>
+                                <div class="step-title">Backup</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-title">Secure</div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i> <strong>This is the only way to restore your wallet.</strong> If you lose this phrase, you will lose access to your funds permanently. Never share it with anyone!
+                        </div>
+
+                        <div class="mnemonic-container text-center">
+                            <h5 class="mb-3">Your Recovery Phrase</h5>
+                            <div id="mnemonicPhrase">
+                                <!-- This would be dynamically generated in a real app -->
+                                <span class="mnemonic-word"><span class="number">1</span>apple</span>
+                                <span class="mnemonic-word"><span class="number">2</span>banana</span>
+                                <span class="mnemonic-word"><span class="number">3</span>cherry</span>
+                                <span class="mnemonic-word"><span class="number">4</span>dragon</span>
+                                <span class="mnemonic-word"><span class="number">5</span>elephant</span>
+                                <span class="mnemonic-word"><span class="number">6</span>flower</span>
+                                <span class="mnemonic-word"><span class="number">7</span>giraffe</span>
+                                <span class="mnemonic-word"><span class="number">8</span>honey</span>
+                                <span class="mnemonic-word"><span class="number">9</span>island</span>
+                                <span class="mnemonic-word"><span class="number">10</span>jungle</span>
+                                <span class="mnemonic-word"><span class="number">11</span>kangaroo</span>
+                                <span class="mnemonic-word"><span class="number">12</span>lemon</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="mb-3">How to Backup Securely</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="text-center mb-3">
+                                                <i class="fas fa-pen-fancy text-primary" style="font-size: 2rem;"></i>
+                                            </div>
+                                            <h6 class="text-center">Write It Down</h6>
+                                            <p class="text-muted">Write the words in order on paper and store in a secure location like a safe.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="text-center mb-3">
+                                                <i class="fas fa-metal text-primary" style="font-size: 2rem;"></i>
+                                            </div>
+                                            <h6 class="text-center">Metal Backup</h6>
+                                            <p class="text-muted">Use a metal backup solution to protect against fire and water damage.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="backupConfirmed" required>
+                            <label class="form-check-label" for="backupConfirmed">
+                                I have written down my recovery phrase and stored it securely
+                            </label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-primary" onclick="proceedToVerification()">I've Backed It Up</button>
+                            <button type="button" class="btn btn-outline-danger" onclick="skipBackup()">Skip Backup (Not Recommended)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container text-center">
+            <small>&copy; 2023 CryptoSecure Wallet. All rights reserved.</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function proceedToVerification() {
+            if (!document.getElementById('backupConfirmed').checked) {
+                alert('Please confirm that you have backed up your recovery phrase');
+                return;
+            }
+            // In a real app, you would show a verification step here
+            // For this demo, we'll redirect to the dashboard
+            window.location.href = 'dashboard.html';
+        }
+        
+        function skipBackup() {
+            if (confirm('WARNING: If you skip backup and lose your device, you will permanently lose access to your funds. Are you sure you want to skip?')) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>
