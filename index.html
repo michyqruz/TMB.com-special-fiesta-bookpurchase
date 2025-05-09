@@ -1026,10 +1026,10 @@
             const icon = toggleBalance.querySelector('i');
             const text = toggleBalance.querySelector('span');
             
-            if (btcBalance.classList.contains('balance-hidden')) {
+            if (usdBalance.classList.contains('balance-hidden')) {
                 // Show balance
                 usdBalance.classList.remove('balance-hidden');
-                btcBalance.style.opacity = '1';
+                btcBalance.style.opacity = '0.9';
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
                 text.textContent = 'Hide';
