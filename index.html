@@ -14,6 +14,7 @@
             // window.location.href = 'index.html';
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #66BB6A; 
@@ -483,6 +484,59 @@
         .copy-btn {
             width: 80px;
         }
+        
+  .crypto-chart-container {
+    margin-bottom: 32px;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+  
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .chart-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--dark);
+  }
+  
+  .chart-wrapper {
+    height: 300px;
+    position: relative;
+  }
+  
+  .price-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .current-price {
+    font-weight: 600;
+    font-size: 18px;
+  }
+  
+  .price-change {
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  
+  .positive {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--primary);
+  }
+  
+  .negative {
+    background-color: rgba(234, 67, 53, 0.1);
+    color: var(--error);
+  }
 
         /* Responsive */
         @media (max-width: 992px) {
@@ -715,7 +769,21 @@
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div
+                   <!-- Crypto Chart Section -->
+<div class="crypto-chart-container">
+  <div class="chart-header">
+    <div class="chart-title">CRYPTO/USD</div>
+    <div class="price-display">
+      <span class="current-price" id="chartCurrentPrice">$4,231.50</span>
+      <span class="price-change positive" id="chartPriceChange">+0.00%</span>
+    </div>
+  </div>
+  <div class="chart-wrapper">
+    <canvas id="cryptoChart"></canvas>
+  </div>
+</div>
+ 
             </div>
         </div>
     </main>
@@ -1159,6 +1227,115 @@
     
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', init);
+        // Crypto Chart Implementation
+function initCryptoChart() {
+  const chartCtx = document.getElementById('cryptoChart').getContext('2d');
+  const chartCurrentPriceEl = document.getElementById('chartCurrentPrice');
+  const chartPriceChangeEl = document.getElementById('chartPriceChange');
+  
+  // Initial data - starts at current price and generates random movements
+  let lastValue = 4231.50;
+  let data = Array(50).fill(0).map(() => {
+    // Random price movement with more realistic volatility
+    const change = (Math.random() * 300 - 150) * (Math.random() > 0.5 ? 1 : 0.7);
+    lastValue += change;
+    // Ensure price doesn't go too low
+    lastValue = Math.max(1000, lastValue);
+    return lastValue;
+  });
+  
+  // Calculate initial 24h change
+  const initialValue = data[0];
+  updateChartPriceDisplay(data[data.length - 1]);
+  
+  // Create the chart
+  const chart = new Chart(chartCtx, {
+    type: 'line',
+    data: {
+      labels: data.map(() => ''),
+      datasets: [{
+        label: 'Price',
+        data: data,
+        borderColor: '#4CAF50',
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.1,
+        fill: {
+          target: 'origin',
+          above: 'rgba(76, 175, 80, 0.1)',
+          below: 'rgba(76, 175, 80, 0.1)'
+        }
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: context => `Price: $${context.parsed.y.toFixed(2)}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { display: false }
+        },
+        y: {
+          grid: { 
+            color: 'rgba(0, 0, 0, 0.05)',
+            drawBorder: false
+          },
+          ticks: {
+            callback: value => `$${value.toLocaleString()}`
+          }
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      }
+    }
+  });
+  
+  // Function to update price display
+  function updateChartPriceDisplay(currentValue) {
+    const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
+    chartCurrentPriceEl.textContent = `$${currentValue.toFixed(2)}`;
+    chartPriceChangeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
+    chartPriceChangeEl.className = `price-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+  }
+  
+  // Function to add new random data point
+  function addChartData() {
+    const change = (Math.random() * 300 - 150) * (Math.random() > 0.5 ? 1 : 0.7);
+    lastValue += change;
+    lastValue = Math.max(1000, lastValue);
+    
+    // Update price display
+    updateChartPriceDisplay(lastValue);
+    
+    // Update chart data
+    chart.data.labels.shift();
+    chart.data.labels.push('');
+    
+    chart.data.datasets[0].data.shift();
+    chart.data.datasets[0].data.push(lastValue);
+    
+    chart.update();
+  }
+  
+  // Update the chart every second
+  setInterval(addChartData, 1000);
+}
+
+// Initialize the chart when the page loads
+initCryptoChart();
 </script>
 </body>
 </html>
