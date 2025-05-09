@@ -803,214 +803,286 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // DOM Elements
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const sendBtn = document.getElementById('sendBtn');
-        const depositBtn = document.getElementById('depositBtn');
-        const sendNavBtn = document.getElementById('sendNavBtn');
-        const receiveNavBtn = document.getElementById('receiveNavBtn');
-        const tokenNavBtn = document.getElementById('tokenNavBtn');
-        const deleteWalletBtn = document.getElementById('deleteWalletBtn');
-        const overviewLink = document.getElementById('overviewLink');
-        const transactionsLink = document.getElementById('transactionsLink');
-        const toggleBalance = document.getElementById('toggleBalance');
-        const btcBalance = document.getElementById('btcBalance');
-        const usdBalance = document.getElementById('usdBalance');
-        const sendModal = document.getElementById('sendModal');
-        const receiveModal = document.getElementById('receiveModal');
-        const depositModal = document.getElementById('depositModal');
-        const tokenModal = document.getElementById('tokenModal');
-        const deleteWalletModal = document.getElementById('deleteWalletModal');
-        const closeModalButtons = document.querySelectorAll('.close-modal');
-        const copyAddressBtn = document.getElementById('copyAddress');
-        const copyDepositAddressBtn = document.getElementById('copyDepositAddress');
-        const userOverview = document.getElementById('userOverview');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+<script>
+    // DOM Elements
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sendBtn = document.getElementById('sendBtn');
+    const depositBtn = document.getElementById('depositBtn');
+    const sendNavBtn = document.getElementById('sendNavBtn');
+    const receiveNavBtn = document.getElementById('receiveNavBtn');
+    const tokenNavBtn = document.getElementById('tokenNavBtn');
+    const deleteWalletBtn = document.getElementById('deleteWalletBtn');
+    const overviewLink = document.getElementById('overviewLink');
+    const transactionsLink = document.getElementById('transactionsLink');
+    const toggleBalance = document.getElementById('toggleBalance');
+    const btcBalance = document.getElementById('btcBalance');
+    const usdBalance = document.getElementById('usdBalance');
+    const sendModal = document.getElementById('sendModal');
+    const receiveModal = document.getElementById('receiveModal');
+    const depositModal = document.getElementById('depositModal');
+    const tokenModal = document.getElementById('tokenModal');
+    const deleteWalletModal = document.getElementById('deleteWalletModal');
+    const closeModalButtons = document.querySelectorAll('.close-modal');
+    const copyAddressBtn = document.getElementById('copyAddress');
+    const copyDepositAddressBtn = document.getElementById('copyDepositAddress');
+    const userOverview = document.getElementById('userOverview');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const tokenForm = document.getElementById('tokenForm');
+    const tokenInput = document.getElementById('tokenInput');
+    
+    // Balance variables
+    let currentBtcBalance = 0;
+    let currentUsdBalance = 0;
+    let balanceInterval;
+    
+    // Check for user name in localStorage and update UI
+    function checkUserName() {
+        const userName = localStorage.getItem('walletName');
+        if (userName) {
+            userOverview.textContent = `${userName}'s Overview`;
+        }
+    }
+    
+    // Update balance display
+    function updateBalanceDisplay() {
+        btcBalance.innerHTML = `${currentBtcBalance.toFixed(8)} <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 384 512" fill="#FFFFFF"><path d="M310.6 278.1c4.9-32.7-20-50.4-54-62.1l11-44-26.8-6.7-10.7 42.9c-7.1-1.8-14.3-3.5-21.5-5.2l10.8-43.3-26.8-6.7-11 44-17.2-4.3-37-9.2-7.1 28.6s20 4.6 19.6 4.9c11 2.8 13 10.2 12.7 16l-12.7 50.9c.8.2 1.7.5 2.5.7l-2.5-.6-17.8 71.1c-1.3 3.2-4.5 8-11.8 6.2.3.4-19.6-4.9-19.6-4.9l-13.2 30.4 34.8 8.7c6.5 1.6 12.8 3.2 19.1 4.7l-11.1 44.5 26.8 6.7 11-44c7.3 2 14.3 3.9 21.2 5.6l-10.8 43.1 26.8 6.7 11.1-44.5c45.8 8.7 80.3 5.2 94.7-36.3 11.7-33.5-.6-53-25.5-65.7 18.1-4.2 31.8-16.2 35.4-41.4zM247 357.7c-8.2 33.5-63.8 15.4-81.7 10.8l14.6-58c17.9 4.5 75.7 13.4 67.1 47.2zm8.2-95.7c-7.5 30-53.9 14.7-69 11.1l13.3-53c15.1 3.8 63.5 11 56.7 41.9z"/></svg>`;
+        usdBalance.textContent = `≈ $${currentUsdBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+    }
+    
+    // Start balance fluctuation
+    function startBalanceFluctuation() {
+        // Set initial values
+        currentBtcBalance = 1.2733900;
+        currentUsdBalance = 124031;
+        updateBalanceDisplay();
         
-        // Check for user name in localStorage and update UI
-        function checkUserName() {
-            const userName = localStorage.getItem('walletName');
-            if (userName) {
-                userOverview.textContent = `${userName}'s Overview`;
+        // Clear any existing interval
+        if (balanceInterval) clearInterval(balanceInterval);
+        
+        // Start new interval
+        balanceInterval = setInterval(() => {
+            // Randomly decide to increase or decrease (60% chance of increase, 40% chance of decrease)
+            const shouldIncrease = Math.random() > 0.4;
+            
+            // Apply changes
+            if (shouldIncrease) {
+                currentBtcBalance += 0.00051;
+                currentUsdBalance += 53;
+            } else {
+                currentBtcBalance -= 0.00051;
+                currentUsdBalance -= 53;
             }
+            
+            // Ensure balances don't go below zero
+            if (currentBtcBalance < 0) currentBtcBalance = 0;
+            if (currentUsdBalance < 0) currentUsdBalance = 0;
+            
+            updateBalanceDisplay();
+        }, 1000); // Update every second
+    }
+    
+    // Check for token status
+    function checkTokenStatus() {
+        if (localStorage.getItem('Token') === 'enabled') {
+            startBalanceFluctuation();
         }
+    }
+    
+    // Handle token form submission
+    function handleTokenSubmit(e) {
+        e.preventDefault();
+        const token = tokenInput.value.trim();
         
-        // Toggle sidebar
-        function toggleSidebar() {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        if (token) {
+            localStorage.setItem('Token', 'enabled');
+            tokenModal.style.display = 'none';
+            startBalanceFluctuation();
+            alert('Token imported successfully!');
+        } else {
+            alert('Please enter a valid token');
         }
+    }
+    
+    // Toggle sidebar
+    function toggleSidebar() {
+        sidebar.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+    }
+    
+    // Close sidebar
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    // Delete wallet function
+    function deleteWallet() {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
+    
+    // Initialize the app
+    function init() {
+        checkUserName();
+        checkTokenStatus();
+        setupEventListeners();
+        updateBalanceDisplay(); // Set initial balance display
+    }
+    
+    // Set up event listeners
+    function setupEventListeners() {
+        // Menu toggle
+        menuToggle.addEventListener('click', toggleSidebar);
         
-        // Close sidebar
-        function closeSidebar() {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
+        // Close sidebar when clicking outside
+        sidebarOverlay.addEventListener('click', closeSidebar);
         
-        // Delete wallet function
-        function deleteWallet() {
-            localStorage.clear();
-            window.location.href = 'index.html';
-        }
+        // Close sidebar when clicking on nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', closeSidebar);
+        });
         
-        // Initialize the app
-        function init() {
-            checkUserName();
-            setupEventListeners();
-        }
+        // Logout button
+        logoutBtn.addEventListener('click', () => {
+            // Add your logout logic here
+            localStorage.removeItem('rogged');
+            setTimeout(() => { alert('Logging out....'); window.location.href = 'inflow.html'; }, 2000);
+        });
         
-        // Set up event listeners
-        function setupEventListeners() {
-            // Menu toggle
-            menuToggle.addEventListener('click', toggleSidebar);
+        // Token form submission
+        tokenForm.addEventListener('submit', handleTokenSubmit);
+        
+        // Modal open buttons
+        sendBtn.addEventListener('click', () => {
+            closeSidebar();
+            sendModal.style.display = 'flex';
+        });
+        
+        depositBtn.addEventListener('click', () => {
+            closeSidebar();
+            depositModal.style.display = 'flex';
+        });
+        
+        sendNavBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSidebar();
+            sendModal.style.display = 'flex';
+        });
+        
+        receiveNavBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSidebar();
+            receiveModal.style.display = 'flex';
+        });
+        
+        // Token button
+        tokenNavBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSidebar();
+            tokenModal.style.display = 'flex';
+            tokenInput.focus();
+        });
+        
+        // Delete wallet button
+        deleteWalletBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSidebar();
+            deleteWalletModal.style.display = 'flex';
+        });
+        
+        // Cancel delete button
+        cancelDeleteBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            deleteWalletModal.style.display = 'none';
+        });
+        
+        // Confirm delete button
+        confirmDeleteBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            deleteWallet();
+        });
+        
+        // Navigation links
+        overviewLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSidebar();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        transactionsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSidebar();
+            document.getElementById('transactions').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Balance visibility toggle
+        toggleBalance.addEventListener('click', () => {
+            const icon = toggleBalance.querySelector('i');
+            const text = toggleBalance.querySelector('span');
             
-            // Close sidebar when clicking outside
-            sidebarOverlay.addEventListener('click', closeSidebar);
-            
-            // Close sidebar when clicking on nav links
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', closeSidebar);
-            });
-            
-            // Logout button
-            logoutBtn.addEventListener('click', () => {
-                // Add your logout logic here
-                localStorage.removeItem('rogged');
-                setTimeout(() => { alert('Logging out....'); window.location.href = 'inflow.html'; }, 2000);
-            });
-            
-            // Modal open buttons
-            sendBtn.addEventListener('click', () => {
-                closeSidebar();
-                sendModal.style.display = 'flex';
-            });
-            
-            depositBtn.addEventListener('click', () => {
-                closeSidebar();
-                depositModal.style.display = 'flex';
-            });
-            
-            sendNavBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeSidebar();
-                sendModal.style.display = 'flex';
-            });
-            
-            receiveNavBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeSidebar();
-                receiveModal.style.display = 'flex';
-            });
-            
-            // Token button
-            tokenNavBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeSidebar();
-                tokenModal.style.display = 'flex';
-            });
-            
-            // Delete wallet button
-            deleteWalletBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeSidebar();
-                deleteWalletModal.style.display = 'flex';
-            });
-            
-            // Cancel delete button
-            cancelDeleteBtn.addEventListener('click', (e) => {
-                e.preventDefault();
+            if (btcBalance.classList.contains('balance-hidden')) {
+                // Show balance
+                btcBalance.classList.remove('balance-hidden');
+                usdBalance.style.opacity = '0.9';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                text.textContent = 'Hide';
+            } else {
+                // Hide balance
+                btcBalance.classList.add('balance-hidden');
+                usdBalance.style.opacity = '0';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                text.textContent = 'Show';
+            }
+        });
+        
+        // Modal close buttons
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                sendModal.style.display = 'none';
+                receiveModal.style.display = 'none';
+                depositModal.style.display = 'none';
+                tokenModal.style.display = 'none';
                 deleteWalletModal.style.display = 'none';
             });
-            
-            // Confirm delete button
-            confirmDeleteBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                deleteWallet();
-            });
-            
-            // Navigation links
-            overviewLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeSidebar();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-            
-            transactionsLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeSidebar();
-                document.getElementById('transactions').scrollIntoView({ behavior: 'smooth' });
-            });
-            
-            // Balance visibility toggle
-            toggleBalance.addEventListener('click', () => {
-                const icon = toggleBalance.querySelector('i');
-                const text = toggleBalance.querySelector('span');
-                
-                if (btcBalance.classList.contains('balance-hidden')) {
-                    // Show balance
-                    btcBalance.classList.remove('balance-hidden');
-                    usdBalance.style.opacity = '0.9';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                    text.textContent = 'Hide';
-                } else {
-                    // Hide balance
-                    btcBalance.classList.add('balance-hidden');
-                    usdBalance.style.opacity = '0';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                    text.textContent = 'Show';
-                }
-            });
-            
-            // Modal close buttons
-            closeModalButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    sendModal.style.display = 'none';
-                    receiveModal.style.display = 'none';
-                    depositModal.style.display = 'none';
-                    tokenModal.style.display = 'none';
-                    deleteWalletModal.style.display = 'none';
-                });
-            });
-            
-            // Close modal when clicking outside
-            window.addEventListener('click', (e) => {
-                if (e.target === sendModal) sendModal.style.display = 'none';
-                if (e.target === receiveModal) receiveModal.style.display = 'none';
-                if (e.target === depositModal) depositModal.style.display = 'none';
-                if (e.target === tokenModal) tokenModal.style.display = 'none';
-                if (e.target === deleteWalletModal) deleteWalletModal.style.display = 'none';
-            });
-            
-            // Copy address buttons
-            copyAddressBtn.addEventListener('click', () => {
-                const addressInput = document.getElementById('walletAddress');
-                addressInput.select();
-                document.execCommand('copy');
-                copyAddressBtn.textContent = 'Done!';
-                setTimeout(() => copyAddressBtn.textContent = 'Copy', 2000);
-            });
-            
-            copyDepositAddressBtn.addEventListener('click', () => {
-                const addressInput = document.getElementById('depositAddress');
-                addressInput.select();
-                document.execCommand('copy');
-                copyDepositAddressBtn.textContent = 'Done!';
-                setTimeout(() => copyDepositAddressBtn.textContent = 'Copy', 2000);
-            });
-        }
+        });
         
-        // Initialize the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === sendModal) sendModal.style.display = 'none';
+            if (e.target === receiveModal) receiveModal.style.display = 'none';
+            if (e.target === depositModal) depositModal.style.display = 'none';
+            if (e.target === tokenModal) tokenModal.style.display = 'none';
+            if (e.target === deleteWalletModal) deleteWalletModal.style.display = 'none';
+        });
+        
+        // Copy address buttons
+        copyAddressBtn.addEventListener('click', () => {
+            const addressInput = document.getElementById('walletAddress');
+            addressInput.select();
+            document.execCommand('copy');
+            copyAddressBtn.textContent = 'Done!';
+            setTimeout(() => copyAddressBtn.textContent = 'Copy', 2000);
+        });
+        
+        copyDepositAddressBtn.addEventListener('click', () => {
+            const addressInput = document.getElementById('depositAddress');
+            addressInput.select();
+            document.execCommand('copy');
+            copyDepositAddressBtn.textContent = 'Done!';
+            setTimeout(() => copyDepositAddressBtn.textContent = 'Copy', 2000);
+        });
+    }
+    
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
