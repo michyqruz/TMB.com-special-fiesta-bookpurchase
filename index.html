@@ -1227,28 +1227,27 @@
     
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', init);
-        // Crypto Chart Implementation
-function initCryptoChart() {
+        
+   function initCryptoChart() {
   const chartCtx = document.getElementById('cryptoChart').getContext('2d');
   const chartCurrentPriceEl = document.getElementById('chartCurrentPrice');
   const chartPriceChangeEl = document.getElementById('chartPriceChange');
   
-  // Initial data - starts at current price and generates random movements
+  // Initial data
   let lastValue = 4231.50;
   let data = Array(50).fill(0).map(() => {
-    // Random price movement with more realistic volatility
     const change = (Math.random() * 300 - 150) * (Math.random() > 0.5 ? 1 : 0.7);
     lastValue += change;
-    // Ensure price doesn't go too low
     lastValue = Math.max(1000, lastValue);
     return lastValue;
   });
   
-  // Calculate initial 24h change
   const initialValue = data[0];
   updateChartPriceDisplay(data[data.length - 1]);
-  
-  // Create the chart
+
+  // Store tooltip position
+  let lastTooltipPosition = null;
+
   const chart = new Chart(chartCtx, {
     type: 'line',
     data: {
@@ -1275,6 +1274,7 @@ function initCryptoChart() {
         tooltip: {
           mode: 'index',
           intersect: false,
+          position: 'nearest',
           callbacks: {
             label: context => `Price: $${context.parsed.y.toFixed(2)}`
           }
@@ -1299,43 +1299,66 @@ function initCryptoChart() {
         mode: 'nearest',
         axis: 'x',
         intersect: false
+      },
+      // Add this new section for animation configuration
+      animation: {
+        onComplete: () => {
+          // Restore tooltip position after update
+          if (lastTooltipPosition) {
+            const activeElements = chart.tooltip?.getActiveElements() || [];
+            if (activeElements.length > 0) {
+              chart.tooltip.setActiveElements([{
+                datasetIndex: 0,
+                index: lastTooltipPosition.index
+              }], {
+                x: lastTooltipPosition.x,
+                y: lastTooltipPosition.y
+              });
+            }
+          }
+        }
       }
     }
   });
-  
-  // Function to update price display
+
+  // Store last tooltip position
+  chart.canvas.addEventListener('mousemove', (e) => {
+    const points = chart.getElementsAtEventForMode(e, 'nearest', { intersect: false }, true);
+    if (points.length) {
+      lastTooltipPosition = {
+        index: points[0].index,
+        x: e.offsetX,
+        y: e.offsetY
+      };
+    }
+  });
+
   function updateChartPriceDisplay(currentValue) {
     const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
     chartCurrentPriceEl.textContent = `$${currentValue.toFixed(2)}`;
     chartPriceChangeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
     chartPriceChangeEl.className = `price-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
   }
-  
-  // Function to add new random data point
+
   function addChartData() {
     const change = (Math.random() * 300 - 150) * (Math.random() > 0.5 ? 1 : 0.7);
     lastValue += change;
     lastValue = Math.max(1000, lastValue);
     
-    // Update price display
     updateChartPriceDisplay(lastValue);
     
-    // Update chart data
     chart.data.labels.shift();
     chart.data.labels.push('');
     
     chart.data.datasets[0].data.shift();
     chart.data.datasets[0].data.push(lastValue);
     
-    chart.update();
+    // Use this update method to preserve interactions
+    chart.update('none');
   }
-  
-  // Update the chart every second
-  setInterval(addChartData, 1000);
-}
 
-// Initialize the chart when the page loads
-initCryptoChart();
+  setInterval(addChartData, 1000);
+}     
 </script>
 </body>
 </html>
