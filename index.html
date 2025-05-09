@@ -718,6 +718,16 @@
                 </div>
             </div>
         </div>
+        <div style="width: 90%; max-width: 800px; margin: 10 auto;">
+            <div style="padding: 20px; background: #f8f9fa; border-radius: 10px 10px 0 0; border: 1px solid #e0e0e0; border-bottom: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="margin: 0; color: #333;">CRYPTO/USD</h2>
+                    <div id="currentPrice" style="font-size: 24px; font-weight: bold; color: #4CAF50;">$100.00</div>
+                </div>
+                <div id="priceChange" style="color: #4CAF50;">+0.00% (24h)</div>
+            </div>
+            <canvas id="cryptoChart" style="display: block; background: white; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 10px 10px;"></canvas>
+        </div>
     </main>
 
     <!-- Send Modal -->
@@ -854,7 +864,135 @@
                 <button class="btn" style="background-color: var(--error); flex: 1;" id="confirmDeleteBtn">Delete Wallet</button>
             </div>
         </div>
-    </div><script>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+      const ctx = document.getElementById('cryptoChart').getContext('2d');
+      const currentPriceEl = document.getElementById('currentPrice');
+      const priceChangeEl = document.getElementById('priceChange');
+      
+      // Initial data - more realistic starting point
+      let lastValue = 4231.50;
+      let data = Array(100).fill(0).map(() => {
+        const change = (Math.random() * 300 - 150) * (Math.random() > 0.5 ? 1 : 0.7);
+        lastValue += change;
+        lastValue = Math.max(1000, lastValue);
+        return lastValue;
+      });
+      
+      // Calculate 24h change
+      const initialValue = data[0];
+      const currentValue = data[data.length - 1];
+      const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
+      
+      // Update price displays
+      currentPriceEl.textContent = '$' + currentValue.toFixed(2);
+      priceChangeEl.textContent = (changePercent >= 0 ? '+' : '') + changePercent + '% (24h)';
+      priceChangeEl.style.color = changePercent >= 0 ? '#4CAF50' : '#f44336';
+      
+      // Create the chart
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map((_, i) => ''),
+          datasets: [{
+            label: 'Price',
+            data: data,
+            borderColor: '#4CAF50',
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.1,
+            fill: {
+              target: 'origin',
+              above: 'rgba(76, 175, 80, 0.1)',
+              below: 'rgba(76, 175, 80, 0.1)'
+            }
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  return 'Price: $' + context.parsed.y.toFixed(2);
+                }
+              }
+            },
+            crosshair: {
+              line: {
+                color: '#666',
+                width: 1,
+                dashPattern: [5, 5]
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { display: false }
+            },
+            y: {
+              grid: { 
+                color: 'rgba(0, 0, 0, 0.05)',
+                drawBorder: false
+              },
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toLocaleString();
+                }
+              }
+            }
+          },
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          }
+        }
+      });
+      
+      // Function to add new random data point
+      function addData() {
+        const change = (Math.random() * 300 - 150) * (Math.random() > 0.5 ? 1 : 0.7);
+        const previousValue = lastValue;
+        lastValue += change;
+        lastValue = Math.max(1000, lastValue);
+        
+        // Update price displays
+        const currentValue = lastValue;
+        const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
+        
+        currentPriceEl.textContent = '$' + currentValue.toFixed(2);
+        priceChangeEl.textContent = (changePercent >= 0 ? '+' : '') + changePercent + '% (24h)';
+        priceChangeEl.style.color = changePercent >= 0 ? '#4CAF50' : '#f44336';
+        
+        // Calculate 24h change
+        const dayChange = ((currentValue - previousValue) / previousValue * 100).toFixed(2);
+        if(dayChange > 0) {
+          currentPriceEl.style.color = '#4CAF50';
+        } else {
+          currentPriceEl.style.color = '#f44336';
+        }
+        
+        // Update chart data
+        chart.data.labels.shift();
+        chart.data.labels.push('');
+        
+        chart.data.datasets[0].data.shift();
+        chart.data.datasets[0].data.push(lastValue);
+        
+        chart.update();
+      }
+      
+      // Update the chart every 0.5 seconds for smoother movement
+      setInterval(addData, 500);
+    });
+        
     // DOM Elements
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
