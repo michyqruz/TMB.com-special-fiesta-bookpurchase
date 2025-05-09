@@ -745,7 +745,7 @@
                    <!-- Crypto Chart Section --><!-- Crypto Chart -->
 <div class="crypto-chart-container">
     <div class="chart-header">
-        <div class="chart-title">BTC/USD</div>
+        <div class="chart-title">GDC/USD</div>
         <div class="price-display">
             <span class="current-price" id="chartCurrentPrice">$0.00</span>
             <span class="price-change" id="chartPriceChange">+0.00%</span>
@@ -1200,20 +1200,14 @@
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', init);
 
-        // Crypto Chart Implementation
-        function initCryptoChart() {
-    // Make sure Chart.js is loaded
-    if (typeof Chart === 'undefined') {
-        console.error('Chart.js is not loaded');
-        return;
-    }
-
+       // Crypto Chart Implementation
+function initCryptoChart() {
     const ctx = document.getElementById('cryptoChart').getContext('2d');
     const priceDisplay = document.getElementById('chartCurrentPrice');
     const changeDisplay = document.getElementById('chartPriceChange');
 
-    // Initial data
-    let lastValue = 50000;
+    // Initial data - starting at 0.04
+    let lastValue = 0.04;
     let data = Array(50).fill(lastValue);
     
     // Create chart
@@ -1238,7 +1232,12 @@
                 legend: { display: false },
                 tooltip: {
                     mode: 'index',
-                    intersect: false
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            return 'Price: $' + context.parsed.y.toFixed(8);
+                        }
+                    }
                 }
             },
             scales: {
@@ -1246,7 +1245,9 @@
                 y: {
                     grid: { color: 'rgba(0,0,0,0.05)' },
                     ticks: {
-                        callback: value => '$' + value.toLocaleString()
+                        callback: function(value) {
+                            return '$' + value.toFixed(8);
+                        }
                     }
                 }
             },
@@ -1260,10 +1261,10 @@
 
     // Update function
     function updateChart() {
-        // Generate new value
-        const change = (Math.random() - 0.5) * 1000;
+        // Generate small changes (0.0001 to 0.0005)
+        const change = (Math.random() * 0.0005 - 0.00025);
         lastValue += change;
-        lastValue = Math.max(10000, Math.min(100000, lastValue)); // Keep between 10k-100k
+        lastValue = Math.max(0.01, lastValue); // Don't go below 0.01
         
         // Update data
         data.push(lastValue);
@@ -1274,19 +1275,19 @@
         chart.update('none');
         
         // Update displays
-        priceDisplay.textContent = '$' + lastValue.toFixed(2);
+        priceDisplay.textContent = '$' + lastValue.toFixed(8);
         
         // Calculate 24h change (simplified)
-        const change24h = ((lastValue - 50000) / 50000 * 100).toFixed(2);
+        const change24h = ((lastValue - 0.04) / 0.04 * 100).toFixed(2);
         changeDisplay.textContent = (change24h >= 0 ? '+' : '') + change24h + '%';
         changeDisplay.className = 'price-change ' + (change24h >= 0 ? 'positive' : 'negative');
     }
 
-    // Initial update
-    updateChart();
-    
-    // Update every second
-    setInterval(updateChart, 1000);
+    // Don't start updating immediately - wait 2 seconds
+    setTimeout(() => {
+        // Start updates every second
+        setInterval(updateChart, 1000);
+    }, 2000);
 }
 
 // Initialize when page loads
