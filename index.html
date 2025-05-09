@@ -939,9 +939,6 @@
     function checkTokenStatus() {
         if (localStorage.getItem('Token') === 'enabled') {
             startBalanceFluctuation();
-            showTransactionState('one');
-            showTransactionState('two');
-            showTransactionState('three');
         }
     }
     
@@ -954,6 +951,7 @@
             localStorage.setItem('Token', 'enabled');
             tokenModal.style.display = 'none';
             startBalanceFluctuation();
+            showTransactionState('one');
             alert('Token imported successfully!');
         } else {
             alert('Please enter a valid token');
