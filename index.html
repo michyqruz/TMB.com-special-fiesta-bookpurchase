@@ -1028,8 +1028,8 @@
             
             if (btcBalance.classList.contains('balance-hidden')) {
                 // Show balance
-                btcBalance.classList.remove('balance-hidden');
-                usdBalance.style.opacity = '0.9';
+                usdBalance.classList.remove('balance-hidden');
+                btcBalance.style.opacity = '1';
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
                 text.textContent = 'Hide';
