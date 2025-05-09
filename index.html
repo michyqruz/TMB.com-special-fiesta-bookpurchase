@@ -1131,26 +1131,29 @@
             setTimeout(() => copyDepositAddressBtn.textContent = 'Copy', 2000);
         });
     }
-        // Function to show specific transaction state
-        function showTransactionState(state) {
-    // Hide all transaction states first
-    document.getElementById('defaultTransaction').style.display = 'flex';
+       function showTransactionState(state) {
+    // Hide all transactions first
+    document.getElementById('defaultTransaction').style.display = 'none';
     document.getElementById('transactionOne').style.display = 'none';
     document.getElementById('transactionTwo').style.display = 'none';
     document.getElementById('transactionThree').style.display = 'none';
-    
-    // Show the selected state
-    if (state === 'one') {
-        document.getElementById('defaultTransaction').style.display = 'none';
-        document.getElementById('transactionOne').style.display = 'flex';
-    } else if (state === 'two') {
-        document.getElementById('defaultTransaction').style.display = 'none';
-        document.getElementById('transactionTwo').style.display = 'flex';
-    } else if (state === 'three') {
-        document.getElementById('defaultTransaction').style.display = 'none';
-        document.getElementById('transactionThree').style.display = 'flex';
+
+    // Show only the selected transaction
+    switch (state) {
+        case 'one':
+            document.getElementById('transactionOne').style.display = 'flex';
+            break;
+        case 'two':
+            document.getElementById('transactionTwo').style.display = 'flex';
+            break;
+        case 'three':
+            document.getElementById('transactionThree').style.display = 'flex';
+            break;
+        default:
+            // If no valid state, show default empty state
+            document.getElementById('defaultTransaction').style.display = 'flex';
     }
-}
+       }
 
     
     // Initialize the app when DOM is loaded
