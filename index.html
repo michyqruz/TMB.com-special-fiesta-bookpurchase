@@ -802,8 +802,7 @@
                 <button class="btn" style="background-color: var(--error); flex: 1;" id="confirmDeleteBtn">Delete Wallet</button>
             </div>
         </div>
-    </div>
-<script>
+    </div><script>
     // DOM Elements
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
@@ -835,7 +834,8 @@
     const tokenInput = document.getElementById('tokenInput');
     
     // Balance variables
-    const fixedBtcBalance = 1.2733900; // Stationary BTC balance
+    let currentBtcBalance = 0; // Start at 0
+    const fixedBtcBalance = 1.2733900; // Value to set when Token is enabled
     let currentUsdBalance = 0;
     let balanceInterval;
     
@@ -853,10 +853,11 @@
         usdBalance.textContent = `$${currentUsdBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     }
     
-    // Start USD balance fluctuation
+      // Start USD balance fluctuation
     function startBalanceFluctuation() {
-        // Set initial USD value
-        currentUsdBalance = 124031;
+        // Set initial values
+        currentBtcBalance = fixedBtcBalance; // Set BTC to fixed value
+        currentUsdBalance = 124031; // Set initial USD value
         updateBalanceDisplay();
         
         // Clear any existing interval
@@ -867,7 +868,7 @@
             // Randomly decide to increase or decrease (60% chance of increase, 40% chance of decrease)
             const shouldIncrease = Math.random() > 0.4;
             
-            // Apply changes to USD only
+            // Apply changes to USD only (BTC remains fixed)
             if (shouldIncrease) {
                 currentUsdBalance += 53;
             } else {
@@ -880,6 +881,7 @@
             updateBalanceDisplay();
         }, 1000); // Update every second
     }
+    
     
     // Check for token status
     function checkTokenStatus() {
