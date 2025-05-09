@@ -485,59 +485,31 @@
             width: 80px;
         }
         
-  .crypto-chart-container {
-    margin-bottom: 32px;
+.crypto-chart-container {
     background: var(--white);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: 20px;
-  }
-  
-  .chart-header {
+    margin-bottom: 30px;
+}
+
+.chart-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
-  }
-  
-  .chart-title {
+    margin-bottom: 15px;
+}
+
+.chart-title {
     font-size: 16px;
     font-weight: 500;
     color: var(--dark);
-  }
-  
-  .chart-wrapper {
+}
+
+.chart-wrapper {
     height: 300px;
     position: relative;
-  }
-  
-  .price-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .current-price {
-    font-weight: 600;
-    font-size: 18px;
-  }
-  
-  .price-change {
-    font-size: 14px;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-  
-  .positive {
-    background-color: rgba(76, 175, 80, 0.1);
-    color: var(--primary);
-  }
-  
-  .negative {
-    background-color: rgba(234, 67, 53, 0.1);
-    color: var(--error);
-  }
-
+}
         /* Responsive */
         @media (max-width: 992px) {
             .dashboard {
@@ -769,19 +741,19 @@
                             </li>
                         </ul>
                     </div>
-                </div
-                   <!-- Crypto Chart Section -->
+                </div>
+                   <!-- Crypto Chart Section --><!-- Crypto Chart -->
 <div class="crypto-chart-container">
-  <div class="chart-header">
-    <div class="chart-title">CRYPTO/USD</div>
-    <div class="price-display">
-      <span class="current-price" id="chartCurrentPrice">$4,231.50</span>
-      <span class="price-change positive" id="chartPriceChange">+0.00%</span>
+    <div class="chart-header">
+        <div class="chart-title">BTC/USD</div>
+        <div class="price-display">
+            <span class="current-price" id="chartCurrentPrice">$0.00</span>
+            <span class="price-change" id="chartPriceChange">+0.00%</span>
+        </div>
     </div>
-  </div>
-  <div class="chart-wrapper">
-    <canvas id="cryptoChart"></canvas>
-  </div>
+    <div class="chart-wrapper">
+        <canvas id="cryptoChart"></canvas>
+    </div>
 </div>
  
             </div>
@@ -1227,138 +1199,98 @@
     
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', init);
-        
-   function initCryptoChart() {
-  const chartCtx = document.getElementById('cryptoChart').getContext('2d');
-  const chartCurrentPriceEl = document.getElementById('chartCurrentPrice');
-  const chartPriceChangeEl = document.getElementById('chartPriceChange');
-  
-  // Initial data
-  let lastValue = 4231.50;
-  let data = Array(50).fill(0).map(() => {
-    const change = (Math.random() * 300 - 150) * (Math.random() > 0.5 ? 1 : 0.7);
-    lastValue += change;
-    lastValue = Math.max(1000, lastValue);
-    return lastValue;
-  });
-  
-  const initialValue = data[0];
-  updateChartPriceDisplay(data[data.length - 1]);
 
-  // Store tooltip position
-  let lastTooltipPosition = null;
+        // Crypto Chart Implementation
+        function initCryptoChart() {
+    // Make sure Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded');
+        return;
+    }
 
-  const chart = new Chart(chartCtx, {
-    type: 'line',
-    data: {
-      labels: data.map(() => ''),
-      datasets: [{
-        label: 'Price',
-        data: data,
-        borderColor: '#4CAF50',
-        borderWidth: 2,
-        pointRadius: 0,
-        tension: 0.1,
-        fill: {
-          target: 'origin',
-          above: 'rgba(76, 175, 80, 0.1)',
-          below: 'rgba(76, 175, 80, 0.1)'
-        }
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          position: 'nearest',
-          callbacks: {
-            label: context => `Price: $${context.parsed.y.toFixed(2)}`
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { display: false }
+    const ctx = document.getElementById('cryptoChart').getContext('2d');
+    const priceDisplay = document.getElementById('chartCurrentPrice');
+    const changeDisplay = document.getElementById('chartPriceChange');
+
+    // Initial data
+    let lastValue = 50000;
+    let data = Array(50).fill(lastValue);
+    
+    // Create chart
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(data.length).fill(''),
+            datasets: [{
+                data: data,
+                borderColor: '#4CAF50',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                tension: 0.1,
+                pointRadius: 0
+            }]
         },
-        y: {
-          grid: { 
-            color: 'rgba(0, 0, 0, 0.05)',
-            drawBorder: false
-          },
-          ticks: {
-            callback: value => `$${value.toLocaleString()}`
-          }
-        }
-      },
-      interaction: {
-        mode: 'nearest',
-        axis: 'x',
-        intersect: false
-      },
-      // Add this new section for animation configuration
-      animation: {
-        onComplete: () => {
-          // Restore tooltip position after update
-          if (lastTooltipPosition) {
-            const activeElements = chart.tooltip?.getActiveElements() || [];
-            if (activeElements.length > 0) {
-              chart.tooltip.setActiveElements([{
-                datasetIndex: 0,
-                index: lastTooltipPosition.index
-              }], {
-                x: lastTooltipPosition.x,
-                y: lastTooltipPosition.y
-              });
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                x: { display: false },
+                y: {
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: {
+                        callback: value => '$' + value.toLocaleString()
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
             }
-          }
         }
-      }
+    });
+
+    // Update function
+    function updateChart() {
+        // Generate new value
+        const change = (Math.random() - 0.5) * 1000;
+        lastValue += change;
+        lastValue = Math.max(10000, Math.min(100000, lastValue)); // Keep between 10k-100k
+        
+        // Update data
+        data.push(lastValue);
+        data.shift();
+        
+        // Update chart
+        chart.data.datasets[0].data = data;
+        chart.update('none');
+        
+        // Update displays
+        priceDisplay.textContent = '$' + lastValue.toFixed(2);
+        
+        // Calculate 24h change (simplified)
+        const change24h = ((lastValue - 50000) / 50000 * 100).toFixed(2);
+        changeDisplay.textContent = (change24h >= 0 ? '+' : '') + change24h + '%';
+        changeDisplay.className = 'price-change ' + (change24h >= 0 ? 'positive' : 'negative');
     }
-  });
 
-  // Store last tooltip position
-  chart.canvas.addEventListener('mousemove', (e) => {
-    const points = chart.getElementsAtEventForMode(e, 'nearest', { intersect: false }, true);
-    if (points.length) {
-      lastTooltipPosition = {
-        index: points[0].index,
-        x: e.offsetX,
-        y: e.offsetY
-      };
-    }
-  });
+    // Initial update
+    updateChart();
+    
+    // Update every second
+    setInterval(updateChart, 1000);
+}
 
-  function updateChartPriceDisplay(currentValue) {
-    const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
-    chartCurrentPriceEl.textContent = `$${currentValue.toFixed(2)}`;
-    chartPriceChangeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
-    chartPriceChangeEl.className = `price-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
-  }
-
-  function addChartData() {
-    const change = (Math.random() * 300 - 150) * (Math.random() > 0.5 ? 1 : 0.7);
-    lastValue += change;
-    lastValue = Math.max(1000, lastValue);
-    
-    updateChartPriceDisplay(lastValue);
-    
-    chart.data.labels.shift();
-    chart.data.labels.push('');
-    
-    chart.data.datasets[0].data.shift();
-    chart.data.datasets[0].data.push(lastValue);
-    
-    // Use this update method to preserve interactions
-    chart.update('none');
-  }
-
-  setInterval(addChartData, 1000);
-}     
+// Initialize when page loads
+window.addEventListener('load', initCryptoChart);
 </script>
 </body>
 </html>
