@@ -835,7 +835,7 @@
     const tokenInput = document.getElementById('tokenInput');
     
     // Balance variables
-    let currentBtcBalance = 0;
+    const fixedBtcBalance = 1.2733900; // Stationary BTC balance
     let currentUsdBalance = 0;
     let balanceInterval;
     
@@ -849,14 +849,13 @@
     
     // Update balance display
     function updateBalanceDisplay() {
-        btcBalance.innerHTML = `≈${currentBtcBalance.toFixed(8)}<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 384 512" fill="#FFFFFF"><path d="M310.6 278.1c4.9-32.7-20-50.4-54-62.1l11-44-26.8-6.7-10.7 42.9c-7.1-1.8-14.3-3.5-21.5-5.2l10.8-43.3-26.8-6.7-11 44-17.2-4.3-37-9.2-7.1 28.6s20 4.6 19.6 4.9c11 2.8 13 10.2 12.7 16l-12.7 50.9c.8.2 1.7.5 2.5.7l-2.5-.6-17.8 71.1c-1.3 3.2-4.5 8-11.8 6.2.3.4-19.6-4.9-19.6-4.9l-13.2 30.4 34.8 8.7c6.5 1.6 12.8 3.2 19.1 4.7l-11.1 44.5 26.8 6.7 11-44c7.3 2 14.3 3.9 21.2 5.6l-10.8 43.1 26.8 6.7 11.1-44.5c45.8 8.7 80.3 5.2 94.7-36.3 11.7-33.5-.6-53-25.5-65.7 18.1-4.2 31.8-16.2 35.4-41.4zM247 357.7c-8.2 33.5-63.8 15.4-81.7 10.8l14.6-58c17.9 4.5 75.7 13.4 67.1 47.2zm8.2-95.7c-7.5 30-53.9 14.7-69 11.1l13.3-53c15.1 3.8 63.5 11 56.7 41.9z"/></svg>`;
-        usdBalance.textContent = `$${currentUsdBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        btcBalance.innerHTML = `${fixedBtcBalance.toFixed(8)} <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 384 512" fill="#FFFFFF"><path d="M310.6 278.1c4.9-32.7-20-50.4-54-62.1l11-44-26.8-6.7-10.7 42.9c-7.1-1.8-14.3-3.5-21.5-5.2l10.8-43.3-26.8-6.7-11 44-17.2-4.3-37-9.2-7.1 28.6s20 4.6 19.6 4.9c11 2.8 13 10.2 12.7 16l-12.7 50.9c.8.2 1.7.5 2.5.7l-2.5-.6-17.8 71.1c-1.3 3.2-4.5 8-11.8 6.2.3.4-19.6-4.9-19.6-4.9l-13.2 30.4 34.8 8.7c6.5 1.6 12.8 3.2 19.1 4.7l-11.1 44.5 26.8 6.7 11-44c7.3 2 14.3 3.9 21.2 5.6l-10.8 43.1 26.8 6.7 11.1-44.5c45.8 8.7 80.3 5.2 94.7-36.3 11.7-33.5-.6-53-25.5-65.7 18.1-4.2 31.8-16.2 35.4-41.4zM247 357.7c-8.2 33.5-63.8 15.4-81.7 10.8l14.6-58c17.9 4.5 75.7 13.4 67.1 47.2zm8.2-95.7c-7.5 30-53.9 14.7-69 11.1l13.3-53c15.1 3.8 63.5 11 56.7 41.9z"/></svg>`;
+        usdBalance.textContent = `≈ $${currentUsdBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
     }
     
-    // Start balance fluctuation
+    // Start USD balance fluctuation
     function startBalanceFluctuation() {
-        // Set initial values
-        currentBtcBalance = 1.2733900;
+        // Set initial USD value
         currentUsdBalance = 124031;
         updateBalanceDisplay();
         
@@ -868,17 +867,14 @@
             // Randomly decide to increase or decrease (60% chance of increase, 40% chance of decrease)
             const shouldIncrease = Math.random() > 0.4;
             
-            // Apply changes
+            // Apply changes to USD only
             if (shouldIncrease) {
-                currentBtcBalance += 0.00051;
                 currentUsdBalance += 53;
             } else {
-                currentBtcBalance -= 0.00051;
                 currentUsdBalance -= 53;
             }
             
-            // Ensure balances don't go below zero
-            if (currentBtcBalance < 0) currentBtcBalance = 0;
+            // Ensure USD balance doesn't go below zero
             if (currentUsdBalance < 0) currentUsdBalance = 0;
             
             updateBalanceDisplay();
