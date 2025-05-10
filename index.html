@@ -1282,7 +1282,7 @@ function initCryptoCharts() {
   initSingleChart(
     'btcChart', 'btcCurrentPrice', 'btcPriceChange',
     42231.50, 0.5, 30000, 60000, 
-    'rgba(255, 255, 255, 0.7)' // White line with opacity
+    'rgba(255, 255, 255, 0.7)'
   );
   
   // ETH Chart (blue)
@@ -1299,13 +1299,16 @@ function initCryptoCharts() {
     'rgba(255, 255, 255, 0.7)'
   );
 
-  // Update the fill colors in the initSingleChart function:
-  fill: {
-    target: 'origin',
-    above: 'rgba(255, 255, 255, 0.1)',
-    below: 'rgba(255, 255, 255, 0.1)'
-  }
-}
+  // Single Chart Initialization Function
+  function initSingleChart(canvasId, priceElId, changeElId, initialPrice, volatility, minPrice, maxPrice, color) {
+    const chartCtx = document.getElementById(canvasId).getContext('2d');
+    const priceEl = document.getElementById(priceElId);
+    const changeEl = document.getElementById(changeElId);
+    
+    let lastValue = initialPrice;
+    let data = Array(100).fill(initialPrice);
+    const initialValue = initialPrice;
+    
     // Create chart
     const chart = new Chart(chartCtx, {
       type: 'line',
@@ -1320,12 +1323,39 @@ function initCryptoCharts() {
           tension: 0.1,
           fill: {
             target: 'origin',
-            above: `${color}20`, // Add opacity
-            below: `${color}20`
+            above: 'rgba(255, 255, 255, 0.1)',
+            below: 'rgba(255, 255, 255, 0.1)'
           }
         }]
       },
-      options: getChartOptions()
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 0 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: context => `Price: $${context.parsed.y.toFixed(2)}`
+            }
+          }
+        },
+        scales: {
+          x: { display: false },
+          y: {
+            grace: '10%',
+            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+            ticks: { 
+              callback: value => `$${value.toLocaleString()}`,
+              color: 'rgba(255, 255, 255, 0.7)'
+            }
+          }
+        },
+        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        elements: { line: { cubicInterpolationMode: 'monotone' } }
+      }
     });
     
     // Update price display
@@ -1333,16 +1363,13 @@ function initCryptoCharts() {
       const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
       priceEl.textContent = `$${currentValue.toFixed(2)}`;
       changeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
-      changeEl.className = `price-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+      changeEl.style.backgroundColor = changePercent >= 0 ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 0, 0, 0.2)';
     }
     
-    // Generate price movement based on volatility
+    // Generate price movement
     function getPriceChange() {
-      // Random walk with momentum
       const baseChange = (Math.random() - 0.45) * volatility * 200;
       const momentum = (lastValue - data[data.length - 10]) / 10;
-      
-      // Apply change with some momentum and damping
       return (baseChange * 0.7) + (momentum * 0.3);
     }
     
@@ -1372,38 +1399,9 @@ function initCryptoCharts() {
       }
     }, 20);
   }
-  
-  // Shared chart options
-  function getChartOptions() {
-    return {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 0 },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          callbacks: {
-            label: context => `Price: $${context.parsed.y.toFixed(2)}`
-          }
-        }
-      },
-      scales: {
-        x: { display: false },
-        y: {
-          grace: '10%',
-          grid: { color: 'rgba(0, 0, 0, 0.05)' },
-          ticks: { callback: value => `$${value.toLocaleString()}` }
-        }
-      },
-      interaction: { mode: 'nearest', axis: 'x', intersect: false },
-      elements: { line: { cubicInterpolationMode: 'monotone' } }
-    };
-  }
 }
 
-// Initialize all charts
+// Initialize the charts when DOM is loaded
 initCryptoCharts();
 </script>
 </body>
