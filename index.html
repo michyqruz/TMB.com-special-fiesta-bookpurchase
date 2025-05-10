@@ -474,15 +474,64 @@
             width: 80px;
         }
         
-.triple-chart-container {
-  margin-bottom: 32px;
+/* Add to your existing styles */
+.crypto-chart-container {
+  background-color: var(--primary-dark);
+  color: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 0;
+  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.chart-group-title {
-  font-size: 18px;
-  font-weight: 600;
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
-  color: var(--dark);
+  color: var(--white);
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.price-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.current-price {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.price-change {
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.chart-wrapper {
+  height: 200px;
+  position: relative;
+}
+
+/* Specific chart colors */
+.eth-chart {
+  background-color: #627EEA;
+  box-shadow: 0 4px 20px rgba(98, 126, 234, 0.3);
+}
+
+.sol-chart {
+  background-color: #00FFA3;
+  box-shadow: 0 4px 20px rgba(0, 255, 163, 0.3);
 }
 
 .chart-row {
@@ -494,6 +543,10 @@
 @media (max-width: 992px) {
   .chart-row {
     grid-template-columns: 1fr;
+  }
+  
+  .crypto-chart-container {
+    margin-bottom: 20px;
   }
 }
         /* Responsive */
@@ -736,50 +789,46 @@
                     </div>
                 </div>
 <!-- Triple Chart Section -->
-<div class="triple-chart-container">
-  <div class="chart-group-title">Market Overview</div>
+<div class="chart-row">
+  <!-- Bitcoin Chart -->
+  <div class="crypto-chart-container">
+    <div class="chart-header">
+      <div class="chart-title">PDC/USD</div>
+      <div class="price-display">
+        <span class="current-price" id="btcCurrentPrice">$42,231.50</span>
+        <span class="price-change" id="btcPriceChange">+0.00%</span>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="btcChart"></canvas>
+    </div>
+  </div>
   
-  <div class="chart-row">
-    <!-- Bitcoin Chart -->
-    <div class="crypto-chart-container">
-      <div class="chart-header">
-        <div class="chart-title">GCT/USD</div>
-        <div class="price-display">
-          <span class="current-price" id="btcCurrentPrice">$42,231.50</span>
-          <span class="price-change positive" id="btcPriceChange">+0.00%</span>
-        </div>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="btcChart"></canvas>
+  <!-- Ethereum Chart -->
+  <div class="crypto-chart-container eth-chart">
+    <div class="chart-header">
+      <div class="chart-title">FSA/USD</div>
+      <div class="price-display">
+        <span class="current-price" id="ethCurrentPrice">$2,345.67</span>
+        <span class="price-change" id="ethPriceChange">+0.00%</span>
       </div>
     </div>
-    
-    <!-- Ethereum Chart -->
-    <div class="crypto-chart-container">
-      <div class="chart-header">
-        <div class="chart-title">SDA/USD</div>
-        <div class="price-display">
-          <span class="current-price" id="ethCurrentPrice">$2,345.67</span>
-          <span class="price-change positive" id="ethPriceChange">+0.00%</span>
-        </div>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="ethChart"></canvas>
+    <div class="chart-wrapper">
+      <canvas id="ethChart"></canvas>
+    </div>
+  </div>
+  
+  <!-- Solana Chart -->
+  <div class="crypto-chart-container sol-chart">
+    <div class="chart-header">
+      <div class="chart-title">TMN/USD</div>
+      <div class="price-display">
+        <span class="current-price" id="solCurrentPrice">$98.76</span>
+        <span class="price-change" id="solPriceChange">+0.00%</span>
       </div>
     </div>
-    
-    <!-- Solana Chart -->
-    <div class="crypto-chart-container">
-      <div class="chart-header">
-        <div class="chart-title">GHY/USD</div>
-        <div class="price-display">
-          <span class="current-price" id="solCurrentPrice">$98.76</span>
-          <span class="price-change positive" id="solPriceChange">+0.00%</span>
-        </div>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="solChart"></canvas>
-      </div>
+    <div class="chart-wrapper">
+      <canvas id="solChart"></canvas>
     </div>
   </div>
 </div>
@@ -1229,52 +1278,34 @@
 
 // Crypto Charts Implementation - Three Charts
 function initCryptoCharts() {
-  // BTC Chart Configuration
+  // BTC Chart (green)
   initSingleChart(
-    'btcChart', 
-    'btcCurrentPrice', 
-    'btcPriceChange',
-    42231.50, // Initial price
-    0.5,      // Volatility (0-1)
-    30000,    // Min price
-    60000,    // Max price
-    '#4CAF50' // Color
+    'btcChart', 'btcCurrentPrice', 'btcPriceChange',
+    42231.50, 0.5, 30000, 60000, 
+    'rgba(255, 255, 255, 0.7)' // White line with opacity
   );
   
-  // ETH Chart Configuration
+  // ETH Chart (blue)
   initSingleChart(
-    'ethChart', 
-    'ethCurrentPrice', 
-    'ethPriceChange',
-    2345.67,  // Initial price
-    0.7,      // Higher volatility
-    1500,     // Min price
-    3500,     // Max price
-    '#627EEA' // Ethereum blue
+    'ethChart', 'ethCurrentPrice', 'ethPriceChange',
+    2345.67, 0.7, 1500, 3500,
+    'rgba(255, 255, 255, 0.7)'
   );
   
-  // SOL Chart Configuration
+  // SOL Chart (teal)
   initSingleChart(
-    'solChart', 
-    'solCurrentPrice', 
-    'solPriceChange',
-    98.76,    // Initial price
-    0.9,      // Highest volatility
-    50,       // Min price
-    200,      // Max price
-    '#00FFA3' // Solana teal
+    'solChart', 'solCurrentPrice', 'solPriceChange',
+    98.76, 0.9, 50, 200,
+    'rgba(255, 255, 255, 0.7)'
   );
-  
-  // Single Chart Initialization Function
-  function initSingleChart(canvasId, priceElId, changeElId, initialPrice, volatility, minPrice, maxPrice, color) {
-    const chartCtx = document.getElementById(canvasId).getContext('2d');
-    const priceEl = document.getElementById(priceElId);
-    const changeEl = document.getElementById(changeElId);
-    
-    let lastValue = initialPrice;
-    let data = Array(100).fill(initialPrice);
-    const initialValue = initialPrice;
-    
+
+  // Update the fill colors in the initSingleChart function:
+  fill: {
+    target: 'origin',
+    above: 'rgba(255, 255, 255, 0.1)',
+    below: 'rgba(255, 255, 255, 0.1)'
+  }
+}
     // Create chart
     const chart = new Chart(chartCtx, {
       type: 'line',
