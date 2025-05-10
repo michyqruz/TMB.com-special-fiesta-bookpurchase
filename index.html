@@ -1200,28 +1200,31 @@
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', init);
 
-       // Crypto Chart Implementation
-function initCryptoChart() {
+      // Crypto Chart Implementation
+        function initCryptoChart() {
     const ctx = document.getElementById('cryptoChart').getContext('2d');
     const priceDisplay = document.getElementById('chartCurrentPrice');
     const changeDisplay = document.getElementById('chartPriceChange');
 
-    // Initial data - starting at 0.04
-    let lastValue = 0.04;
-    let data = Array(50).fill(lastValue);
-    
-    // Create chart
+    // Load or initialize chart data from localStorage
+    let chartData = JSON.parse(localStorage.getItem('gtcChartData')) || {
+        values: Array(50).fill(0.04),
+        lastValue: 0.04,
+        lastChange: 0
+    };
+
+    // Create chart with persisted data
     const chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: Array(data.length).fill(''),
+            labels: Array(chartData.values.length).fill(''),
             datasets: [{
-                data: data,
+                data: chartData.values,
                 borderColor: '#4CAF50',
                 borderWidth: 2,
                 fill: true,
                 backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                tension: 0.1,
+                tension: 0.4, // Increased for smoother lines
                 pointRadius: 0
             }]
         },
@@ -1234,9 +1237,7 @@ function initCryptoChart() {
                     mode: 'index',
                     intersect: false,
                     callbacks: {
-                        label: function(context) {
-                            return 'Price: $' + context.parsed.y.toFixed(8);
-                        }
+                        label: (context) => `Price: $${context.parsed.y.toFixed(8)}`
                     }
                 }
             },
@@ -1245,49 +1246,55 @@ function initCryptoChart() {
                 y: {
                     grid: { color: 'rgba(0,0,0,0.05)' },
                     ticks: {
-                        callback: function(value) {
-                            return '$' + value.toFixed(8);
-                        }
+                        callback: (value) => `$${value.toFixed(8)}`
                     }
                 }
             },
-            interaction: {
-                mode: 'nearest',
-                axis: 'x',
-                intersect: false
+            interaction: { mode: 'nearest' },
+            animation: {
+                duration: 1000, // Smooth animation
+                easing: 'easeOutQuad'
             }
         }
     });
 
-    // Update function
+    // Update function with smoother transitions
     function updateChart() {
-        // Generate small changes (0.0001 to 0.0005)
-        const change = (Math.random() * 0.0005 - 0.00025);
-        lastValue += change;
-        lastValue = Math.max(0.01, lastValue); // Don't go below 0.01
+        // Generate smaller, more natural movements
+        const change = (Math.random() * 0.0003 - 0.00015) * (Math.random() > 0.4 ? 1 : 0.6);
+        chartData.lastValue += change;
+        chartData.lastValue = Math.max(0.01, Math.min(0.1, chartData.lastValue)); // Keep between 0.01-0.1
         
         // Update data
-        data.push(lastValue);
-        data.shift();
+        chartData.values.push(chartData.lastValue);
+        chartData.values.shift();
+        chartData.lastChange = change;
         
-        // Update chart
-        chart.data.datasets[0].data = data;
-        chart.update('none');
+        // Update chart smoothly
+        chart.data.datasets[0].data = chartData.values;
+        chart.update();
         
         // Update displays
-        priceDisplay.textContent = '$' + lastValue.toFixed(8);
+        priceDisplay.textContent = `$${chartData.lastValue.toFixed(8)}`;
         
-        // Calculate 24h change (simplified)
-        const change24h = ((lastValue - 0.04) / 0.04 * 100).toFixed(2);
-        changeDisplay.textContent = (change24h >= 0 ? '+' : '') + change24h + '%';
-        changeDisplay.className = 'price-change ' + (change24h >= 0 ? 'positive' : 'negative');
+        // Calculate 24h change based on first value
+        const change24h = ((chartData.lastValue - chartData.values[0]) / chartData.values[0] * 100).toFixed(2);
+        changeDisplay.textContent = `${change24h >= 0 ? '+' : ''}${change24h}%`;
+        changeDisplay.className = `price-change ${change24h >= 0 ? 'positive' : 'negative'}`;
+        
+        // Save state
+        localStorage.setItem('gtcChartData', JSON.stringify(chartData));
     }
 
-    // Don't start updating immediately - wait 2 seconds
+    // Initialize display
+    priceDisplay.textContent = `$${chartData.lastValue.toFixed(8)}`;
+    changeDisplay.textContent = '+0.00%';
+    
+    // Start updates after 1.5s pause, then every second
     setTimeout(() => {
-        // Start updates every second
+        updateChart(); // Initial update
         setInterval(updateChart, 1000);
-    }, 2000);
+    }, 1500);
 }
 
 // Initialize when page loads
