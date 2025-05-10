@@ -1200,105 +1200,167 @@
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', init);
 
-      // Crypto Chart Implementation
-        function initCryptoChart() {
-    const ctx = document.getElementById('cryptoChart').getContext('2d');
-    const priceDisplay = document.getElementById('chartCurrentPrice');
-    const changeDisplay = document.getElementById('chartPriceChange');
-
-    // Load or initialize chart data from localStorage
-    let chartData = JSON.parse(localStorage.getItem('gtcChartData')) || {
-        values: Array(50).fill(0.04),
-        lastValue: 0.04,
-        lastChange: 0
-    };
-
-    // Create chart with persisted data
-    const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: Array(chartData.values.length).fill(''),
-            datasets: [{
-                data: chartData.values,
-                borderColor: '#4CAF50',
-                borderWidth: 2,
-                fill: true,
-                backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                tension: 0.4, // Increased for smoother lines
-                pointRadius: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    callbacks: {
-                        label: (context) => `Price: $${context.parsed.y.toFixed(8)}`
-                    }
-                }
-            },
-            scales: {
-                x: { display: false },
-                y: {
-                    grid: { color: 'rgba(0,0,0,0.05)' },
-                    ticks: {
-                        callback: (value) => `$${value.toFixed(8)}`
-                    }
-                }
-            },
-            interaction: { mode: 'nearest' },
-            animation: {
-                duration: 1000, // Smooth animation
-                easing: 'easeOutQuad'
-            }
+      // Crypto Chart Implementation - Smooth Version
+function initCryptoChart() {
+  const chartCtx = document.getElementById('cryptoChart').getContext('2d');
+  const chartCurrentPriceEl = document.getElementById('chartCurrentPrice');
+  const chartPriceChangeEl = document.getElementById('chartPriceChange');
+  
+  // Initial data - starts at current price with smoother initial dataset
+  let lastValue = 4231.50;
+  let data = Array(100).fill(lastValue); // Start with flat line
+  
+  // Gradually introduce volatility over first 10 seconds
+  let volatilityFactor = 0;
+  const maxVolatility = 1;
+  
+  // Calculate initial 24h change
+  const initialValue = lastValue;
+  updateChartPriceDisplay(lastValue);
+  
+  // Create the chart with optimized configuration
+  const chart = new Chart(chartCtx, {
+    type: 'line',
+    data: {
+      labels: data.map(() => ''),
+      datasets: [{
+        label: 'Price',
+        data: data,
+        borderColor: '#4CAF50',
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.1,
+        fill: {
+          target: 'origin',
+          above: 'rgba(76, 175, 80, 0.1)',
+          below: 'rgba(76, 175, 80, 0.1)'
         }
-    });
-
-    // Update function with smoother transitions
-    function updateChart() {
-        // Generate smaller, more natural movements
-        const change = (Math.random() * 0.0003 - 0.00015) * (Math.random() > 0.4 ? 1 : 0.6);
-        chartData.lastValue += change;
-        chartData.lastValue = Math.max(0.01, Math.min(0.1, chartData.lastValue)); // Keep between 0.01-0.1
-        
-        // Update data
-        chartData.values.push(chartData.lastValue);
-        chartData.values.shift();
-        chartData.lastChange = change;
-        
-        // Update chart smoothly
-        chart.data.datasets[0].data = chartData.values;
-        chart.update();
-        
-        // Update displays
-        priceDisplay.textContent = `$${chartData.lastValue.toFixed(8)}`;
-        
-        // Calculate 24h change based on first value
-        const change24h = ((chartData.lastValue - chartData.values[0]) / chartData.values[0] * 100).toFixed(2);
-        changeDisplay.textContent = `${change24h >= 0 ? '+' : ''}${change24h}%`;
-        changeDisplay.className = `price-change ${change24h >= 0 ? 'positive' : 'negative'}`;
-        
-        // Save state
-        localStorage.setItem('gtcChartData', JSON.stringify(chartData));
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 0, // general animation time
+        easing: 'linear'
+      },
+      hover: {
+        animationDuration: 0 // duration of animations when hovering an item
+      },
+      responsiveAnimationDuration: 0, // animation duration after a resize
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: context => `Price: $${context.parsed.y.toFixed(2)}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          display: false,
+          grid: { display: false }
+        },
+        y: {
+          grace: '5%', // Add padding to prevent clipping
+          grid: { 
+            color: 'rgba(0, 0, 0, 0.05)',
+            drawBorder: false
+          },
+          ticks: {
+            callback: value => `$${value.toLocaleString()}`
+          }
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      },
+      elements: {
+        line: {
+          cubicInterpolationMode: 'monotone' // Smoother line
+        }
+      }
     }
-
-    // Initialize display
-    priceDisplay.textContent = `$${chartData.lastValue.toFixed(8)}`;
-    changeDisplay.textContent = '+0.00%';
+  });
+  
+  // Function to update price display
+  function updateChartPriceDisplay(currentValue) {
+    const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
+    chartCurrentPriceEl.textContent = `$${currentValue.toFixed(2)}`;
+    chartPriceChangeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
+    chartPriceChangeEl.className = `price-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+  }
+  
+  // Function to generate smooth price movement
+  function getSmoothPriceChange() {
+    // Gradually increase volatility over first 10 seconds
+    if (volatilityFactor < maxVolatility) {
+      volatilityFactor += 0.02;
+    }
     
-    // Start updates after 1.5s pause, then every second
-    setTimeout(() => {
-        updateChart(); // Initial update
-        setInterval(updateChart, 1000);
-    }, 1500);
+    // Base change with normal distribution (bell curve)
+    let change = 0;
+    const rand = Math.random();
+    
+    // 68% of changes will be small (±1.5%)
+    if (rand < 0.68) {
+      change = (Math.random() * 60 - 30) * volatilityFactor;
+    } 
+    // 27% medium changes (±3%)
+    else if (rand < 0.95) {
+      change = (Math.random() * 120 - 60) * volatilityFactor;
+    }
+    // 5% large changes (±5%)
+    else {
+      change = (Math.random() * 200 - 100) * volatilityFactor;
+    }
+    
+    // Apply damping to prevent extreme jumps
+    return change * 0.7;
+  }
+  
+  // Function to add new smooth data point
+  function addChartData() {
+    const change = getSmoothPriceChange();
+    const newValue = lastValue + change;
+    
+    // Ensure price stays within reasonable bounds
+    lastValue = Math.max(1000, Math.min(newValue, 10000));
+    
+    // Update price display
+    updateChartPriceDisplay(lastValue);
+    
+    // Update chart data
+    chart.data.labels.shift();
+    chart.data.labels.push('');
+    
+    chart.data.datasets[0].data.shift();
+    chart.data.datasets[0].data.push(lastValue);
+    
+    // Smooth update
+    chart.update('none'); // 'none' means no animation
+  }
+  
+  // Initialize with some gradual movement
+  let warmupCount = 0;
+  const warmupInterval = setInterval(() => {
+    if (warmupCount >= 100) {
+      clearInterval(warmupInterval);
+      // Switch to regular updates
+      setInterval(addChartData, 1000);
+    } else {
+      addChartData();
+      warmupCount++;
+    }
+  }, 20); // Fast updates for initial warmup
 }
 
-// Initialize when page loads
-window.addEventListener('load', initCryptoChart);
+// Initialize the chart when the page loads
+initCryptoChart();
 </script>
 </body>
 </html>
