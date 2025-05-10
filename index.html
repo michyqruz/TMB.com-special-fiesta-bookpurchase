@@ -548,6 +548,46 @@
     margin-bottom: 20px;
   }
 }
+        
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: var(--white);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  padding: 12px 0;
+  z-index: 1000;
+}
+
+.nav-icon {
+  background: none;
+  border: none;
+  color: var(--medium-gray);
+  font-size: 22px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.nav-icon.active {
+  color: var(--primary-dark);
+  transform: translateY(-5px);
+}
+
+.nav-icon:hover {
+  color: var(--primary-dark);
+  background: rgba(76, 175, 80, 0.1);
+}
         /* Responsive */
         @media (max-width: 992px) {
             .dashboard {
@@ -833,6 +873,18 @@
 </div>
             </div>
         </div>
+        <!-- Fixed Bottom Navigation -->
+<div class="bottom-nav">
+  <button class="nav-icon" id="walletBtn">
+    <i class="fas fa-wallet"></i>
+  </button>
+  <button class="nav-icon" id="marketBtn">
+    <i class="fas fa-chart-line"></i>
+  </button>
+  <button class="nav-icon" id="depositNavBtn">
+    <i class="fas fa-money-bill-wave"></i>
+  </button>
+</div>
     </main>
 
     <!-- Send Modal -->
@@ -1270,13 +1322,42 @@
             document.getElementById('defaultTransaction').style.display = 'flex';
     }
        }
+        
+// Bottom Navigation Functionality
+document.getElementById('walletBtn').addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+document.getElementById('marketBtn').addEventListener('click', () => {
+  document.querySelector('.triple-chart-container').scrollIntoView({ 
+    behavior: 'smooth' 
+  });
+});
+
+document.getElementById('depositNavBtn').addEventListener('click', () => {
+  depositModal.style.display = 'flex';
+});
+
+// Highlight active section based on scroll position
+window.addEventListener('scroll', () => {
+  const icons = document.querySelectorAll('.nav-icon');
+  const scrollPosition = window.scrollY;
+  
+  if (scrollPosition < 300) {
+    icons.forEach(icon => icon.classList.remove('active'));
+    document.getElementById('walletBtn').classList.add('active');
+  } else if (scrollPosition > document.querySelector('.triple-chart-container').offsetTop - 200) {
+    icons.forEach(icon => icon.classList.remove('active'));
+    document.getElementById('marketBtn').classList.add('active');
+  }
+});
 
     
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', init);
-
-// Crypto Charts Implementation - Three Charts
-function initCryptoCharts() {
+     
+        // Crypto Charts Implementation - Three Charts
+    function initCryptoCharts() {
   // BTC Chart (green)
   initSingleChart(
     'btcChart', 'btcCurrentPrice', 'btcPriceChange',
