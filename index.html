@@ -1181,7 +1181,7 @@
     }
        function showTransactionState(state) {
     // Hide all transactions first
-    document.getElementById('defaultTransaction').style.display = 'block';
+    document.getElementById('defaultTransaction').style.display = 'none';
     document.getElementById('transactionOne').style.display = 'none';
     document.getElementById('transactionTwo').style.display = 'none';
     document.getElementById('transactionThree').style.display = 'none';
@@ -1189,7 +1189,7 @@
     // Show only the selected transaction
     switch (state) {
         case 'one':
-            document.getElementById('transactionOne').style.display = 'none';
+            document.getElementById('transactionOne').style.display = 'flex';
             break;
         case 'two':
             document.getElementById('transactionTwo').style.display = 'flex';
