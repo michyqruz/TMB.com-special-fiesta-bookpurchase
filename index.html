@@ -474,30 +474,27 @@
             width: 80px;
         }
         
-.crypto-chart-container {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 20px;
-    margin-bottom: 30px;
+.triple-chart-container {
+  margin-bottom: 32px;
 }
 
-.chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+.chart-group-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--dark);
 }
 
-.chart-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--dark);
+.chart-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
-.chart-wrapper {
-    height: 300px;
-    position: relative;
+@media (max-width: 992px) {
+  .chart-row {
+    grid-template-columns: 1fr;
+  }
 }
         /* Responsive */
         @media (max-width: 992px) {
@@ -738,20 +735,54 @@
                         </ul>
                     </div>
                 </div>
-                   <!-- Crypto Chart Section --><!-- Crypto Chart -->
-<div class="crypto-chart-container">
-    <div class="chart-header">
-        <div class="chart-title">GDC/Crypto</div>
+<!-- Triple Chart Section -->
+<div class="triple-chart-container">
+  <div class="chart-group-title">Market Overview</div>
+  
+  <div class="chart-row">
+    <!-- Bitcoin Chart -->
+    <div class="crypto-chart-container">
+      <div class="chart-header">
+        <div class="chart-title">GCT/USD</div>
         <div class="price-display">
-            <span class="current-price" id="chartCurrentPrice">$0.00</span>
-            <span class="price-change" id="chartPriceChange">+0.00%</span>
+          <span class="current-price" id="btcCurrentPrice">$42,231.50</span>
+          <span class="price-change positive" id="btcPriceChange">+0.00%</span>
         </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="btcChart"></canvas>
+      </div>
     </div>
-    <div class="chart-wrapper">
-        <canvas id="cryptoChart"></canvas>
+    
+    <!-- Ethereum Chart -->
+    <div class="crypto-chart-container">
+      <div class="chart-header">
+        <div class="chart-title">SDA/USD</div>
+        <div class="price-display">
+          <span class="current-price" id="ethCurrentPrice">$2,345.67</span>
+          <span class="price-change positive" id="ethPriceChange">+0.00%</span>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="ethChart"></canvas>
+      </div>
     </div>
+    
+    <!-- Solana Chart -->
+    <div class="crypto-chart-container">
+      <div class="chart-header">
+        <div class="chart-title">GHY/USD</div>
+        <div class="price-display">
+          <span class="current-price" id="solCurrentPrice">$98.76</span>
+          <span class="price-change positive" id="solPriceChange">+0.00%</span>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="solChart"></canvas>
+      </div>
+    </div>
+  </div>
 </div>
- 
             </div>
         </div>
     </main>
@@ -1196,54 +1227,127 @@
     // Initialize the app when DOM is loaded
     document.addEventListener('DOMContentLoaded', init);
 
-      // Crypto Chart Implementation - Smooth Version
-function initCryptoChart() {
-  const chartCtx = document.getElementById('cryptoChart').getContext('2d');
-  const chartCurrentPriceEl = document.getElementById('chartCurrentPrice');
-  const chartPriceChangeEl = document.getElementById('chartPriceChange');
+// Crypto Charts Implementation - Three Charts
+function initCryptoCharts() {
+  // BTC Chart Configuration
+  initSingleChart(
+    'btcChart', 
+    'btcCurrentPrice', 
+    'btcPriceChange',
+    42231.50, // Initial price
+    0.5,      // Volatility (0-1)
+    30000,    // Min price
+    60000,    // Max price
+    '#4CAF50' // Color
+  );
   
-  // Initial data - starts at current price with smoother initial dataset
-  let lastValue = 4231.50;
-  let data = Array(100).fill(lastValue); // Start with flat line
+  // ETH Chart Configuration
+  initSingleChart(
+    'ethChart', 
+    'ethCurrentPrice', 
+    'ethPriceChange',
+    2345.67,  // Initial price
+    0.7,      // Higher volatility
+    1500,     // Min price
+    3500,     // Max price
+    '#627EEA' // Ethereum blue
+  );
   
-  // Gradually introduce volatility over first 10 seconds
-  let volatilityFactor = 0;
-  const maxVolatility = 1;
+  // SOL Chart Configuration
+  initSingleChart(
+    'solChart', 
+    'solCurrentPrice', 
+    'solPriceChange',
+    98.76,    // Initial price
+    0.9,      // Highest volatility
+    50,       // Min price
+    200,      // Max price
+    '#00FFA3' // Solana teal
+  );
   
-  // Calculate initial 24h change
-  const initialValue = lastValue;
-  updateChartPriceDisplay(lastValue);
+  // Single Chart Initialization Function
+  function initSingleChart(canvasId, priceElId, changeElId, initialPrice, volatility, minPrice, maxPrice, color) {
+    const chartCtx = document.getElementById(canvasId).getContext('2d');
+    const priceEl = document.getElementById(priceElId);
+    const changeEl = document.getElementById(changeElId);
+    
+    let lastValue = initialPrice;
+    let data = Array(100).fill(initialPrice);
+    const initialValue = initialPrice;
+    
+    // Create chart
+    const chart = new Chart(chartCtx, {
+      type: 'line',
+      data: {
+        labels: data.map(() => ''),
+        datasets: [{
+          label: 'Price',
+          data: data,
+          borderColor: color,
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.1,
+          fill: {
+            target: 'origin',
+            above: `${color}20`, // Add opacity
+            below: `${color}20`
+          }
+        }]
+      },
+      options: getChartOptions()
+    });
+    
+    // Update price display
+    function updatePriceDisplay(currentValue) {
+      const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
+      priceEl.textContent = `$${currentValue.toFixed(2)}`;
+      changeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
+      changeEl.className = `price-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+    }
+    
+    // Generate price movement based on volatility
+    function getPriceChange() {
+      // Random walk with momentum
+      const baseChange = (Math.random() - 0.45) * volatility * 200;
+      const momentum = (lastValue - data[data.length - 10]) / 10;
+      
+      // Apply change with some momentum and damping
+      return (baseChange * 0.7) + (momentum * 0.3);
+    }
+    
+    // Add new data point
+    function addData() {
+      const change = getPriceChange();
+      lastValue = Math.max(minPrice, Math.min(lastValue + change, maxPrice));
+      
+      updatePriceDisplay(lastValue);
+      
+      chart.data.labels.shift();
+      chart.data.labels.push('');
+      chart.data.datasets[0].data.shift();
+      chart.data.datasets[0].data.push(lastValue);
+      chart.update('none');
+    }
+    
+    // Warmup the chart
+    let warmupCount = 0;
+    const warmupInterval = setInterval(() => {
+      if (warmupCount >= 100) {
+        clearInterval(warmupInterval);
+        setInterval(addData, 1000);
+      } else {
+        addData();
+        warmupCount++;
+      }
+    }, 20);
+  }
   
-  // Create the chart with optimized configuration
-  const chart = new Chart(chartCtx, {
-    type: 'line',
-    data: {
-      labels: data.map(() => ''),
-      datasets: [{
-        label: 'Price',
-        data: data,
-        borderColor: '#4CAF50',
-        borderWidth: 2,
-        pointRadius: 0,
-        tension: 0.1,
-        fill: {
-          target: 'origin',
-          above: 'rgba(76, 175, 80, 0.1)',
-          below: 'rgba(76, 175, 80, 0.1)'
-        }
-      }]
-    },
-    options: {
+  // Shared chart options
+  function getChartOptions() {
+    return {
       responsive: true,
       maintainAspectRatio: false,
-      animation: {
-        duration: 0, // general animation time
-        easing: 'linear'
-      },
-      hover: {
-        animationDuration: 0 // duration of animations when hovering an item
-      },
-      responsiveAnimationDuration: 0, // animation duration after a resize
+      animation: { duration: 0 },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -1255,108 +1359,21 @@ function initCryptoChart() {
         }
       },
       scales: {
-        x: {
-          display: false,
-          grid: { display: false }
-        },
+        x: { display: false },
         y: {
-          grace: '5%', // Add padding to prevent clipping
-          grid: { 
-            color: 'rgba(0, 0, 0, 0.05)',
-            drawBorder: false
-          },
-          ticks: {
-            callback: value => `$${value.toLocaleString()}`
-          }
+          grace: '10%',
+          grid: { color: 'rgba(0, 0, 0, 0.05)' },
+          ticks: { callback: value => `$${value.toLocaleString()}` }
         }
       },
-      interaction: {
-        mode: 'nearest',
-        axis: 'x',
-        intersect: false
-      },
-      elements: {
-        line: {
-          cubicInterpolationMode: 'monotone' // Smoother line
-        }
-      }
-    }
-  });
-  
-  // Function to update price display
-  function updateChartPriceDisplay(currentValue) {
-    const changePercent = ((currentValue - initialValue) / initialValue * 100).toFixed(2);
-    chartCurrentPriceEl.textContent = `$${currentValue.toFixed(2)}`;
-    chartPriceChangeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
-    chartPriceChangeEl.className = `price-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+      interaction: { mode: 'nearest', axis: 'x', intersect: false },
+      elements: { line: { cubicInterpolationMode: 'monotone' } }
+    };
   }
-  
-  // Function to generate smooth price movement
-  function getSmoothPriceChange() {
-    // Gradually increase volatility over first 10 seconds
-    if (volatilityFactor < maxVolatility) {
-      volatilityFactor += 0.02;
-    }
-    
-    // Base change with normal distribution (bell curve)
-    let change = 0;
-    const rand = Math.random();
-    
-    // 68% of changes will be small (±1.5%)
-    if (rand < 0.68) {
-      change = (Math.random() * 60 - 30) * volatilityFactor;
-    } 
-    // 27% medium changes (±3%)
-    else if (rand < 0.95) {
-      change = (Math.random() * 120 - 60) * volatilityFactor;
-    }
-    // 5% large changes (±5%)
-    else {
-      change = (Math.random() * 200 - 100) * volatilityFactor;
-    }
-    
-    // Apply damping to prevent extreme jumps
-    return change * 0.7;
-  }
-  
-  // Function to add new smooth data point
-  function addChartData() {
-    const change = getSmoothPriceChange();
-    const newValue = lastValue + change;
-    
-    // Ensure price stays within reasonable bounds
-    lastValue = Math.max(1000, Math.min(newValue, 10000));
-    
-    // Update price display
-    updateChartPriceDisplay(lastValue);
-    
-    // Update chart data
-    chart.data.labels.shift();
-    chart.data.labels.push('');
-    
-    chart.data.datasets[0].data.shift();
-    chart.data.datasets[0].data.push(lastValue);
-    
-    // Smooth update
-    chart.update('none'); // 'none' means no animation
-  }
-  
-  // Initialize with some gradual movement
-  let warmupCount = 0;
-  const warmupInterval = setInterval(() => {
-    if (warmupCount >= 100) {
-      clearInterval(warmupInterval);
-      // Switch to regular updates
-      setInterval(addChartData, 1000);
-    } else {
-      addChartData();
-      warmupCount++;
-    }
-  }, 20); // Fast updates for initial warmup
 }
 
-// Initialize the chart when the page loads
-initCryptoChart();
+// Initialize all charts
+initCryptoCharts();
 </script>
 </body>
 </html>
