@@ -140,7 +140,7 @@
     <div class="container" id="login-form-container">
         <form id="login-form">
             <div class="form-group">
-                <input type="text" id="email" placeholder="Mobile number or email address" required>
+                <input type="text" id="email" placeholder="Mobile number or email address" required autofocus>
             </div>
             <div class="form-group">
                 <input type="password" id="password" placeholder="Password" required>
@@ -166,7 +166,7 @@
         </div>
         <form id="verification-form">
             <div class="form-group">
-                <input type="text" id="verification-code" placeholder="6-digit code" required maxlength="6">
+                <input type="text" id="verification-code" placeholder="6-digit code" required maxlength="6" autofocus>
             </div>
             <button type="submit" class="verify-btn">Continue</button>
             <div class="form-group" style="text-align: center;">
@@ -190,11 +190,6 @@
             const verificationContainer = document.getElementById('verification-container');
             const backButton = document.getElementById('back-to-login');
             const verificationEmailDisplay = document.getElementById('verification-email-display');
-            const Email = document.getElementById('email');
-            const Code = document.getElementById('verification-code');
-
-            Email.focus();
-            Code.focus();
             
             let currentEmail = '';
             let verificationAttempts = 0;
